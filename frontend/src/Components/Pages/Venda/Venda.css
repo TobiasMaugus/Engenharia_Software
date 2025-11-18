@@ -1,0 +1,9 @@
+.venda-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh; 
+  background-color: #f4f4f9;
+  font-family: Arial, sans-serif;
+  width: 90%;
+}
