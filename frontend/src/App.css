@@ -1,0 +1,26 @@
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Layout principal em coluna, ocupando toda a viewport */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* altura total da tela */
+  width: 100vw;
+  background-color: #d8e3db;
+}
+
+/* O conteúdo entre o header e o footer deve expandir */
+.main-container > *:not(:first-child):not(:last-child) {
+  flex: 1;
+  overflow-y: auto; /* habilita rolagem só no meio */
+}
+
+/* Garantir que body e fundo se comportem corretamente */
+body {
+  background-color: #d8e3db;
+}
