@@ -119,7 +119,7 @@ export default function ProdutoBody() {
 
             <Pagination
                 currentPage={currentPage}
-                totalPages={Math.max(1, Math.ceil(produtos.length / 10))} // ajustável
+                totalPages={Math.max(1, Math.ceil(produtos.length / 10))}
                 onPageChange={(p) => setCurrentPage(p)}
             />
 

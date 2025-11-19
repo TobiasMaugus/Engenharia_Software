@@ -28,21 +28,28 @@ function App() {
         <div className="main-container">
             <Header />
             <Routes>
-              <Route path="/" element={<LoginForm />} />
-              <Route path="Vendas" element={<VendaBody />} />
-              <Route path="Vendas/ExcluirVenda" element={<ExcluirVenda />} />
-              <Route path="Vendas/EditarVenda" element={<EditarVenda />} />
-              <Route path="Vendas/CadastrarVenda" element={<CadastrarVenda />} />
-              <Route path="Vendas/VisualizarVenda" element={<VisualizarVenda />} />
-              <Route path="Produtos" element={<ProdutoBody />} />
-              <Route path="Produtos/ExcluirProduto" element={<ExcluirProduto />} />
-              <Route path="Produtos/EditarProduto" element={<EditarProduto />} />
-              <Route path="Produtos/CadastrarProduto" element={<CadastrarProduto />} />
-              <Route path="Clientes" element={<ClienteBody />} />
-              <Route path="Clientes/ExcluirCliente" element={<ExcluirCliente />} />
-              <Route path="Clientes/EditarCliente" element={<EditarCliente />} />
-              <Route path="Clientes/CadastrarCliente" element={<CadastrarCliente />} />
+                <Route path="/" element={<LoginForm />} />
+
+                {/* VENDAS */}
+                <Route path="Vendas" element={<VendaBody />} />
+                <Route path="Vendas/ExcluirVenda/:id" element={<ExcluirVenda />} />
+                <Route path="Vendas/EditarVenda/:id" element={<EditarVenda />} />
+                <Route path="Vendas/CadastrarVenda" element={<CadastrarVenda />} />
+                <Route path="Vendas/VisualizarVenda/:id" element={<VisualizarVenda />} />
+
+                {/* PRODUTOS */}
+                <Route path="Produtos" element={<ProdutoBody />} />
+                <Route path="Produtos/ExcluirProduto/:id" element={<ExcluirProduto />} />
+                <Route path="Produtos/EditarProduto/:id" element={<EditarProduto />} />
+                <Route path="Produtos/CadastrarProduto" element={<CadastrarProduto />} />
+
+                {/* CLIENTES */}
+                <Route path="Clientes" element={<ClienteBody />} />
+                <Route path="Clientes/ExcluirCliente/:id" element={<ExcluirCliente />} />
+                <Route path="Clientes/EditarCliente/:id" element={<EditarCliente />} />
+                <Route path="Clientes/CadastrarCliente" element={<CadastrarCliente />} />
             </Routes>
+
             <Footer />
         </div>
       </Bg>

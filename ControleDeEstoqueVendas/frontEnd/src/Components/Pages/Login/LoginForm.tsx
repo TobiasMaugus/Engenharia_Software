@@ -18,7 +18,7 @@ export default function Login() {
             return;
         }
 
-        // Login bem-sucedido: o token SEMPRE existe (tipo seguro)
+        // Token de resposta de login bem sucedido
         localStorage.setItem("token", result.token);
 
         navigate("/Vendas");
