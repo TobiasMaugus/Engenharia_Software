@@ -32,9 +32,7 @@ export default function CadastroEdicaoForm({
   const [formData, setFormData] = useState(dadosIniciais);
   const [loading, setLoading] = useState(false);
 
-  // ----------------------------------------------------
-  // 1️⃣ CARREGAR DADOS DO PRODUTO QUANDO FOR EDITAR
-  // ----------------------------------------------------
+
   useEffect(() => {
     async function carregarDados() {
       if (modo !== "editar" || !id || tipo !== "produto") return;
@@ -63,9 +61,7 @@ export default function CadastroEdicaoForm({
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  // ----------------------------------------------------
-  // 2️⃣ SALVAR (EDITAR OU CADASTRAR)
-  // ----------------------------------------------------
+
   async function salvar() {
     if (tipo !== "produto") return;
 

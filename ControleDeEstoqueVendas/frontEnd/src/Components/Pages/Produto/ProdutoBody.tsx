@@ -39,7 +39,7 @@ export default function ProdutoBody() {
     }, []);
 
     // ------------------------------
-    // Função de busca (cliente)
+    // Função de busca 
     // ------------------------------
     function handleSearch(term: string) {
         const q = (term || "").trim().toLowerCase();
