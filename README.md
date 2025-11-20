@@ -52,9 +52,11 @@ cd backend
 Rode o arquivo createBD.sql
 
 3. No arquivo application.properties, configure:
+```bash
 spring.datasource.username=SEU_USUARIO
 spring.datasource.password=SUA_SENHA
 spring.datasource.url=jdbc:mysql://localhost:3306/BACKEND
+```
 
 4. Execute o backend:
 ```bash
@@ -95,7 +97,9 @@ npm run dev
 Estas instruções são para quem deseja contribuir com o desenvolvimento do projeto.
 
 ### 3.1 – Clonar o Repositório
+```bash
 git clone https://github.com/TobiasMaugus/Engenharia_Software.git
+```
 
 ### 3.2 – Instalar Dependências
 Backend
@@ -151,23 +155,24 @@ Este projeto foi desenvolvido utilizando as seguintes tecnologias e ferramentas:
 
 ```bash
 /projeto/
-├── backend/ControleEstoqueVendas/backend                  # API Java + Spring Boot (Servidor)
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/         # Código-fonte principal da aplicação
-│   │   │   └── resources/    # Arquivos de configuração e estáticos
-│   │   └── test/             # Classes e recursos para testes unitários
-│   ├── pom.xml               # Gerenciamento de dependências Maven
-│   └── README.md
-│
-├── frontend/                 # Aplicação React (Cliente/Interface do Usuário)
-│   ├── src/
-│   │   ├── components/       # Módulos de UI reutilizáveis
-│   │   |    ├── pages/            # Telas principais da aplicação
-│   ├── public/               # Ativos públicos (imagens, favicon, etc.)
-│   ├── vite.config.ts        # Configuração do bundler Vite
-│   └── package.json          # Metadados e dependências do Node.js
-│
-├── docs/                     # Documentação externa do projeto (diagramas, etc.)
-│
-└── README.md                 # Visão geral e instruções do projeto
+|  /ControleEstoqueVendas
+|  ├──/backend                  # API Java + Spring Boot (Servidor)
+|  │   ├── src/
+|  │   │   ├── main/
+|  │   │   │   ├── java/         # Código-fonte principal da aplicação
+|  │   │   │   └── resources/    # Arquivos de configuração e estáticos
+|  │   │   └── test/             # Classes e recursos para testes unitários
+|  │   ├── pom.xml               # Gerenciamento de dependências Maven
+|  │   └── README.md
+|  │
+|  ├── frontend/                 # Aplicação React (Cliente/Interface do Usuário)
+|  │   ├── src/
+|  │   │   ├── components/       # Módulos de UI reutilizáveis
+|  │   │   |    ├── pages/            # Telas principais da aplicação
+|  │   ├── public/               # Ativos públicos (imagens, favicon, etc.)
+|  │   ├── vite.config.ts        # Configuração do bundler Vite
+|  │   └── package.json          # Metadados e dependências do Node.js
+|  │
+|  ├── documentação/                     # Documentação externa do projeto (diagramas, etc.)
+|  │
+|  └── README.md                 # Visão geral e instruções do projeto
