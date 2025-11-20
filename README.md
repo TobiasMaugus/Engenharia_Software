@@ -153,10 +153,10 @@ Este projeto foi desenvolvido utilizando as seguintes tecnologias e ferramentas:
 
 ## 5. 🗂 Estrutura de Pastas
 
-```bash
+```text
 /projeto/
 |  /ControleEstoqueVendas
-|  ├──/backend                  # API Java + Spring Boot (Servidor)
+|  ├── backend                  # API Java + Spring Boot (Servidor)
 |  │   ├── src/
 |  │   │   ├── main/
 |  │   │   │   ├── java/         # Código-fonte principal da aplicação
@@ -168,11 +168,13 @@ Este projeto foi desenvolvido utilizando as seguintes tecnologias e ferramentas:
 |  ├── frontend/                 # Aplicação React (Cliente/Interface do Usuário)
 |  │   ├── src/
 |  │   │   ├── components/       # Módulos de UI reutilizáveis
-|  │   │   |    ├── pages/            # Telas principais da aplicação
+|  │   │   ├── pages/            # Telas principais da aplicação
 |  │   ├── public/               # Ativos públicos (imagens, favicon, etc.)
 |  │   ├── vite.config.ts        # Configuração do bundler Vite
 |  │   └── package.json          # Metadados e dependências do Node.js
 |  │
-|  ├── documentação/                     # Documentação externa do projeto (diagramas, etc.)
+|  ├── documentação/             # Documentação externa do projeto (diagramas, etc.)
 |  │
 |  └── README.md                 # Visão geral e instruções do projeto
+```
+
