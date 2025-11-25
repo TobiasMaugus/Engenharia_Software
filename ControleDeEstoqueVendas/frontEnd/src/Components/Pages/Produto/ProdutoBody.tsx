@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 import PageLayout from "../../PageLayout";
 import SearchBar from "../../SearchBar";
@@ -7,24 +7,19 @@ import DataTable from "../../DataTable";
 import Pagination from "../../Pagination";
 
 import ExcluirModal from "../../ModalExcluir";
-import { listarProdutos, excluirProduto } from "../../../api/produtoService";
-import type { Produto } from "../../../types/Produto";
+import {listarProdutos, excluirProduto} from "../../../api/produtoService";
+import type {Produto} from "../../../types/Produto";
 
 export default function ProdutoBody() {
     const navigate = useNavigate();
 
-    // lista completa (fonte de verdade) e lista exibida (filtrada)
     const [allProdutos, setAllProdutos] = useState<Produto[]>([]);
     const [produtos, setProdutos] = useState<Produto[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Modal
     const [modalAberto, setModalAberto] = useState(false);
     const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(null);
 
-    // ------------------------------
-    // Carregar produtos
-    // ------------------------------
     useEffect(() => {
         async function fetchProdutos() {
             try {
@@ -35,45 +30,42 @@ export default function ProdutoBody() {
                 console.error("Erro ao carregar produtos:", error);
             }
         }
+
         fetchProdutos();
     }, []);
 
-    // ------------------------------
-    // Função de busca 
-    // ------------------------------
     function handleSearch(term: string) {
         const q = (term || "").trim().toLowerCase();
         if (!q) {
-            // sem termo -> mostra tudo
             setProdutos(allProdutos);
             return;
         }
+
         const filtrados = allProdutos.filter((p) =>
             (p.nome ?? "").toString().toLowerCase().includes(q)
         );
         setProdutos(filtrados);
-        setCurrentPage(1); // opcional: volta pra primeira página ao buscar
+        setCurrentPage(1);
     }
 
-    // ------------------------------
-    // Abrir modal
-    // ------------------------------
     function abrirModal(produto: Produto) {
         setProdutoSelecionado(produto);
         setModalAberto(true);
     }
 
-    // ------------------------------
-    // Confirmar exclusão
-    // ------------------------------
     async function confirmarExclusao() {
         if (!produtoSelecionado) return;
 
         try {
             await excluirProduto(produtoSelecionado.id!);
-            // remover das duas listas
-            setAllProdutos((prev) => prev.filter((p) => p.id !== produtoSelecionado.id));
-            setProdutos((prev) => prev.filter((p) => p.id !== produtoSelecionado.id));
+
+            setAllProdutos((prev) =>
+                prev.filter((p) => p.id !== produtoSelecionado.id)
+            );
+
+            setProdutos((prev) =>
+                prev.filter((p) => p.id !== produtoSelecionado.id)
+            );
         } catch (error) {
             console.error("Erro ao excluir:", error);
         } finally {
@@ -87,7 +79,7 @@ export default function ProdutoBody() {
             <SearchBar
                 placeholder="Buscar:"
                 onAdd={() => navigate("/Produtos/CadastrarProduto")}
-                onSearch={handleSearch} // se seu SearchBar aceitar essa prop, ótimo
+                onSearch={handleSearch}
             />
 
             <DataTable
@@ -109,11 +101,11 @@ export default function ProdutoBody() {
                 }))}
                 onEdit={(id) => {
                     const p = produtos.find((prod) => prod.id === id);
-                    if (p) navigate(`/Produtos/EditarProduto/${id}`, { state: { produto: p } });
+                    if (p) navigate(`/Produtos/EditarProduto/${id}`, {state: {produto: p}});
                 }}
                 onDelete={(id) => {
                     const p = produtos.find((prod) => prod.id === id);
-                    if (p) abrirModal(p);
+                    if (p) abrirModal(p);   // ⚠️ AGORA ABRE O MODAL DIRETO!
                 }}
             />
 

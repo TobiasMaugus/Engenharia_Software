@@ -15,7 +15,6 @@ import type { Cliente } from "../../../types/Cliente";
 export default function ClienteBody() {
     const navigate = useNavigate();
 
-    // lista completa e lista filtrada
     const [allClientes, setAllClientes] = useState<Cliente[]>([]);
     const [clientes, setClientes] = useState<Cliente[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -24,9 +23,7 @@ export default function ClienteBody() {
     const [modalAberto, setModalAberto] = useState(false);
     const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null);
 
-    // ------------------------------
     // Carregar clientes
-    // ------------------------------
     useEffect(() => {
         async function fetchClientes() {
             try {
@@ -40,9 +37,7 @@ export default function ClienteBody() {
         fetchClientes();
     }, []);
 
-    // ------------------------------
     // Busca
-    // ------------------------------
     function handleSearch(term: string) {
         const t = (term || "").trim().toLowerCase();
 
@@ -59,17 +54,13 @@ export default function ClienteBody() {
         setCurrentPage(1);
     }
 
-    // ------------------------------
     // Abrir modal
-    // ------------------------------
     function abrirModal(cliente: Cliente) {
         setClienteSelecionado(cliente);
         setModalAberto(true);
     }
 
-    // ------------------------------
     // Confirmar exclusão
-    // ------------------------------
     async function confirmarExclusao() {
         if (!clienteSelecionado) return;
 
