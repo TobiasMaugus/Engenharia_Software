@@ -13,31 +13,30 @@ export default function VendaBody() {
     const navigate = useNavigate();
 
     const [vendas, setVendas] = useState<Venda[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 3; // depois ajustaremos com backend
+    const [currentPage, setCurrentPage] = useState(0); // backend é 0-based
+    const [totalPages, setTotalPages] = useState(1);
 
-    // Carrega vendas ao montar página
     useEffect(() => {
         async function carregar() {
             try {
-                const data = await listarVendas();
-                setVendas(data);
+                const page = await listarVendas(currentPage);
+
+                setVendas(page.content);        // lista de vendas
+                setTotalPages(page.totalPages); // total de páginas do backend
             } catch (error) {
                 console.error("Erro ao carregar vendas:", error);
             }
         }
 
         carregar();
-    }, []);
+    }, [currentPage]);
 
-    // Excluir venda
     async function handleDelete(id: number) {
         if (!confirm("Tem certeza que deseja excluir esta venda?")) return;
 
         try {
             await excluirVenda(id);
 
-            // atualiza a tabela localmente
             setVendas((prev) => prev.filter((v) => v.id !== id));
         } catch (error) {
             console.error("Erro ao excluir:", error);
@@ -62,13 +61,19 @@ export default function VendaBody() {
                     "EDITAR",
                     "EXCLUIR",
                 ]}
-
-                // formatamos valor e data para exibição bonita
                 data={vendas.map((v) => ({
-                    ...v,
-                    valor: v.valor.toFixed(2).replace(".", ","), // "230,00"
-                    data: new Date(v.data).toLocaleDateString("pt-BR"),
+                    id: v.id,
+                    vendedor: v.vendedorNome ?? "—",
+                    cliente: v.clienteNome ?? "—",
+                    valor:
+                        typeof v.valorTotal === "number"
+                            ? v.valorTotal.toFixed(2).replace(".", ",")
+                            : "0,00",
+                    data: v.dataVenda
+                        ? new Date(v.dataVenda).toLocaleDateString("pt-BR")
+                        : "—",
                 }))}
+
 
                 onView={(id) => navigate(`/Vendas/VisualizarVenda/${id}`)}
                 onEdit={(id) => navigate(`/Vendas/EditarVenda/${id}`)}
@@ -76,9 +81,9 @@ export default function VendaBody() {
             />
 
             <Pagination
-                currentPage={currentPage}
+                currentPage={currentPage + 1}          // mostra 1-based na tela
                 totalPages={totalPages}
-                onPageChange={(p) => setCurrentPage(p)}
+                onPageChange={(p) => setCurrentPage(p - 1)} // recebe 1-based → converte para 0-based
             />
         </PageLayout>
     );

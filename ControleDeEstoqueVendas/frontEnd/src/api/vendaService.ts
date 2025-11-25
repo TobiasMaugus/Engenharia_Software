@@ -1,11 +1,20 @@
 import api from "./api";
 import type { Venda } from "../types/Venda";
 
+export interface PageResponse<T> {
+    content: T[];
+    totalPages: number;
+    totalElements: number;
+    pageable?: any;
+    size?: number;
+    number?: number;
+}
+
 const path = "/vendas";
 
-export async function listarVendas(): Promise<Venda[]> {
-    const r = await api.get(path);
-    return r.data;
+export async function listarVendas(page = 0): Promise<PageResponse<Venda>> {
+    const r = await api.get(`${path}?page=${page}`);
+    return r.data; // page.content, page.totalPages, etc
 }
 
 export async function criarVenda(body: Venda): Promise<Venda> {
