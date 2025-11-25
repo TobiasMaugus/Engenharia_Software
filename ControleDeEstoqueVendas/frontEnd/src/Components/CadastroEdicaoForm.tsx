@@ -8,6 +8,7 @@ interface Campo {
   name: string;
   type: string;
   options?: string[];
+  readOnly?: boolean;
 }
 
 interface Props {
@@ -62,28 +63,52 @@ export default function CadastroEdicaoForm({
   }
 
 
+  async function salvarProduto() {
+    const payload = {
+      nome: String(formData.nome),
+      categoria: String(formData.categoria),
+      preco: Number(formData.preco),
+      quantidadeEstoque: Number(formData.estoque),
+    };
+
+    if (modo === "cadastrar") {
+      const { criarProduto } = await import("../api/produtoService");
+      await criarProduto(payload);
+    } else if (modo === "editar" && id) {
+      const { editarProduto } = await import("../api/produtoService");
+      await editarProduto(Number(id), payload);
+    }
+  }
+
+  async function salvarCliente() {
+    const payload = {
+      nome: String(formData.nome),
+      telefone: String(formData.telefone),
+      cpf: String(formData.cpf),
+    };
+
+    if (modo === "cadastrar") {
+      const { criarCliente } = await import("../api/clienteService");
+      await criarCliente(payload);
+    } else if (modo === "editar" && id) {
+      const { editarCliente } = await import("../api/clienteService");
+      await editarCliente(Number(id), payload);
+    }
+  }
+
   async function salvar() {
-    if (tipo !== "produto") return;
-
     setLoading(true);
-    try {
-      const payload = {
-        nome: String(formData.nome),
-        categoria: String(formData.categoria),
-        preco: Number(formData.preco),
-        quantidadeEstoque: Number(formData.estoque),
-      };
 
-      if (modo === "cadastrar") {
-        const { criarProduto } = await import("../api/produtoService");
-        await criarProduto(payload);
-      } else if (modo === "editar" && id) {
-        const { editarProduto } = await import("../api/produtoService");
-        await editarProduto(Number(id), payload);
+    try {
+      if (tipo === "produto") {
+        await salvarProduto();
+      } else if (tipo === "cliente") {
+        await salvarCliente();
       }
 
       alert("Salvo com sucesso!");
       navigate(-1);
+
     } catch (err) {
       console.error(err);
       alert("Erro ao salvar. Veja o console.");
@@ -91,6 +116,7 @@ export default function CadastroEdicaoForm({
       setLoading(false);
     }
   }
+
 
   return (
       <div className="bg-[#E0ECE4] flex justify-center items-center h-screen">
