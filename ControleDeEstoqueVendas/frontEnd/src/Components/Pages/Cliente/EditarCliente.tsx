@@ -21,7 +21,7 @@ export default function EditarCliente() {
             campos={[
                 { label: "Nome", name: "nome", type: "text" },
                 { label: "Telefone", name: "telefone", type: "text" },
-                { label: "CPF", name: "cpf", type: "text" },
+                { label: "CPF", name: "cpf", type: "text", readOnly: true }, // <-- aqui
             ]}
             dadosIniciais={dadosIniciais}
         />
