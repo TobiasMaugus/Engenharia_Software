@@ -7,13 +7,14 @@ interface Campo {
     type: string;
     options?: string[];
     readOnly?: boolean;
+    produtos?: any[]; // para itensVenda
 }
 
 interface FormularioProps {
     campos: Campo[];
-    dadosIniciais?: Record<string, string | number>;
+    dadosIniciais?: Record<string, any>; // pode ter array de itens
     somenteLeitura?: boolean;
-    onChange?: (formData: Record<string, string | number>) => void;
+    onChange?: (formData: Record<string, any>) => void;
 }
 
 export default function Formulario({
@@ -29,14 +30,16 @@ export default function Formulario({
         setFormData(dadosIniciais);
     }, [dadosIniciais]);
 
-    function handleChange(name: string, value: string) {
+    function handleChange(name: string, value: any) {
         const campo = campos.find((c) => c.name === name);
 
         if (somenteLeitura || campo?.readOnly) return;
 
-        const novo = { ...formData, [name]: value };
-        setFormData((prev) => ({ ...prev, [name]: value }));
-        onChange?.({ ...formData, [name]: value });
+        setFormData((prev) => {
+            const novo = { ...prev, [name]: value };
+            onChange?.(novo);
+            return novo;
+        });
     }
 
     return (
@@ -45,13 +48,14 @@ export default function Formulario({
                 const disabled = somenteLeitura || campo.readOnly;
 
                 if (campo.type === "itensVenda") {
-                    const produtos = (campo as any).produtos ?? [];
+                    const produtos = campo.produtos ?? [];
                     const itens = (formData["itens"] as any[]) ?? [];
 
                     return (
                         <div key={campo.name} className="flex flex-col">
                             <label className="text-white font-semibold mb-1">Itens da Venda</label>
 
+                            {/* SELECT PARA ADICIONAR PRODUTO */}
                             <select
                                 disabled={disabled}
                                 className="bg-[#357F7D] text-white px-4 py-2 rounded-md disabled:opacity-60"
@@ -65,7 +69,7 @@ export default function Formulario({
                                     const novoItem = {
                                         produtoId: produto.id,
                                         quantidade: 1,
-                                        precoUnitario: produto.preco
+                                        precoUnitario: produto.preco,
                                     };
 
                                     const novos = [...itens, novoItem];
@@ -80,40 +84,91 @@ export default function Formulario({
                                 ))}
                             </select>
 
-                            {/* LISTA DE ITENS */}
-                            <div className="flex flex-col gap-2 mt-3">
-                                {itens.map((item, i) => {
-                                    const produto = produtos.find((p) => p.id === item.produtoId);
+                            {/* TABELA DE ITENS */}
+                            <div className="overflow-x-auto rounded-md shadow mt-4">
+                                <table className="min-w-full border-collapse">
+                                    <thead className="bg-[#357F7D] text-white">
+                                    <tr>
+                                        <th className="border border-gray-500 p-2">Produto</th>
+                                        <th className="border border-gray-500 p-2">Quantidade</th>
+                                        <th className="border border-gray-500 p-2">Preço Unitário</th>
+                                        <th className="border border-gray-500 p-2">Subtotal</th>
+                                        {!somenteLeitura && (
+                                            <th className="border border-gray-500 p-2">Ações</th>
+                                        )}
+                                    </tr>
+                                    </thead>
 
-                                    return (
-                                        <div
-                                            key={i}
-                                            className="bg-[#265b58] p-3 rounded-md text-white flex justify-between items-center"
-                                        >
-                                        <span>
-                                            {produto?.nome} — {item.quantidade} un
-                                        </span>
+                                    <tbody className="bg-[#2F3A3A] text-white">
+                                    {itens.map((item, i) => {
+                                        const produto = produtos.find((p) => p.id === item.produtoId);
+                                        if (!produto) return null;
 
-                                            {!somenteLeitura && (
-                                                <button
-                                                    type ="button"
-                                                    className="bg-red-500 px-2 py-1 rounded-md"
-                                                    onClick={() => {
-                                                        const novos = itens.filter((_, idx) => idx !== i);
-                                                        handleChange("itens", novos);
-                                                    }}
-                                                >
-                                                    Remover
-                                                </button>
-                                            )}
-                                        </div>
-                                    );
-                                })}
+                                        return (
+                                            <tr key={i}>
+                                                <td className="border border-gray-600 p-2">{produto.nome}</td>
+
+                                                {/* QUANTIDADE EDITÁVEL */}
+                                                <td className="border border-gray-600 p-2">
+                                                    {!somenteLeitura ? (
+                                                        <input
+                                                            type="number"
+                                                            min={1}
+                                                            value={item.quantidade}
+                                                            className="w-16 text-white px-2 py-1 rounded-md appearance-none"
+                                                            onChange={(e) => {
+                                                                const valor = e.target.value;
+                                                                const novaQtd = valor === "" ? "" : Number(valor);
+                                                                if (novaQtd !== "" && (isNaN(novaQtd) || novaQtd < 1)) return;
+
+                                                                const novosItens = itens.map((it, idx) =>
+                                                                    idx === i
+                                                                        ? { ...it, quantidade: novaQtd === "" ? "" : novaQtd }
+                                                                        : it
+                                                                );
+                                                                handleChange("itens", novosItens);
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        item.quantidade
+                                                    )}
+                                                </td>
+
+                                                <td className="border border-gray-600 p-2">
+                                                    R$ {item.precoUnitario.toFixed(2).replace(".", ",")}
+                                                </td>
+
+                                                <td className="border border-gray-600 p-2">
+                                                    R$ {(
+                                                    item.precoUnitario *
+                                                    (Number(item.quantidade) || 0)
+                                                ).toFixed(2).replace(".", ",")}
+                                                </td>
+
+                                                {!somenteLeitura && (
+                                                    <td className="border border-gray-600 p-2">
+                                                        <button
+                                                            type="button"
+                                                            className="bg-red-500 px-2 py-1 rounded-md"
+                                                            onClick={() => {
+                                                                const novos = itens.filter((_, idx) => idx !== i);
+                                                                handleChange("itens", novos);
+                                                            }}
+                                                        >
+                                                            Remover
+                                                        </button>
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        );
+                                    })}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     );
                 }
-                
+
                 return (
                     <div key={campo.name} className="flex flex-col">
                         <label className="text-white font-semibold mb-1">{campo.label}</label>
