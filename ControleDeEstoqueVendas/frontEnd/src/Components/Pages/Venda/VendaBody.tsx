@@ -21,6 +21,8 @@ export default function VendaBody() {
             try {
                 const page = await listarVendas(currentPage);
 
+                console.table(page.content);
+
                 setVendas(page.content);        // lista de vendas
                 setTotalPages(page.totalPages); // total de páginas do backend
             } catch (error) {
