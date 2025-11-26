@@ -133,7 +133,6 @@ export default function CadastroEdicaoForm({
   }
 
 
-
   return (
       <div className="bg-[#E0ECE4] flex justify-center items-center h-screen">
         <div className="bg-[#4E5A58] text-white w-[80%] max-w-3xl rounded-2xl p-10 shadow-lg relative">

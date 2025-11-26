@@ -35,8 +35,8 @@ export default function Formulario({
         if (somenteLeitura || campo?.readOnly) return;
 
         const novo = { ...formData, [name]: value };
-        setFormData(novo);
-        onChange?.(novo);
+        setFormData((prev) => ({ ...prev, [name]: value }));
+        onChange?.({ ...formData, [name]: value });
     }
 
     return (
@@ -96,6 +96,7 @@ export default function Formulario({
 
                                             {!somenteLeitura && (
                                                 <button
+                                                    type ="button"
                                                     className="bg-red-500 px-2 py-1 rounded-md"
                                                     onClick={() => {
                                                         const novos = itens.filter((_, idx) => idx !== i);

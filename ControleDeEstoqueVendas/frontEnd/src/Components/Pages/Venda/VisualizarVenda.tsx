@@ -18,7 +18,6 @@ export default function VisualizarVenda() {
         <div className="mt-6 mb-6">
             <div className="relative flex flex-col gap-4 bg-[#455150] p-8 rounded-2xl shadow-lg max-w-4xl w-full mx-auto">
 
-                {/* 🔙 Botão de voltar (estilo solicitado) */}
                 <button
                     onClick={() => navigate(-1)}
                     className="absolute right-8 top-8 bg-[#8EB9AE] p-2 rounded-md hover:bg-[#7aa59b] transition"
