@@ -96,6 +96,20 @@ export default function CadastroEdicaoForm({
     }
   }
 
+  async function salvarVenda() {
+    const payload = {
+      clienteId: Number(formData.clienteId),
+      itens: formData.itens.map((i: any) => ({
+        produtoId: Number(i.produtoId),
+        quantidade: Number(i.quantidade),
+      })),
+    };
+
+    const { criarVenda } = await import("../api/vendaService");
+    await criarVenda(payload);
+  }
+
+
   async function salvar() {
     setLoading(true);
 
@@ -104,11 +118,12 @@ export default function CadastroEdicaoForm({
         await salvarProduto();
       } else if (tipo === "cliente") {
         await salvarCliente();
+      } else if (tipo === "venda") {
+        await salvarVenda();
       }
 
       alert("Salvo com sucesso!");
       navigate(-1);
-
     } catch (err) {
       console.error(err);
       alert("Erro ao salvar. Veja o console.");
@@ -116,6 +131,7 @@ export default function CadastroEdicaoForm({
       setLoading(false);
     }
   }
+
 
 
   return (
