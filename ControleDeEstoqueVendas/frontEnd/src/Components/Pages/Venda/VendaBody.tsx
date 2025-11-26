@@ -77,7 +77,11 @@ export default function VendaBody() {
                 }))}
 
 
-                onView={(id) => navigate(`/Vendas/VisualizarVenda/${id}`)}
+                onView={(id) => {
+                    const venda = vendas.find((v) => v.id === id);
+                    navigate(`/Vendas/VisualizarVenda/${id}`, { state: venda });
+                }}
+
                 onEdit={(id) => navigate(`/Vendas/EditarVenda/${id}`)}
                 onDelete={(id) => handleDelete(id)}
             />
