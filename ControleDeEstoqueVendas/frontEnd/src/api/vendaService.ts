@@ -22,6 +22,12 @@ export async function criarVenda(body: Venda): Promise<Venda> {
     return r.data;
 }
 
+export async function editarVenda(id: number, body: Venda): Promise<Venda> {
+    const r = await api.put(`${path}/${id}`, body);
+    return r.data;
+}
+
+
 export async function buscarVenda(id: number): Promise<Venda> {
     const r = await api.get(`${path}/${id}`);
     return r.data;

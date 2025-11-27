@@ -46,13 +46,17 @@ export default function ClienteBody() {
             return;
         }
 
-        const filtrados = allClientes.filter((c) =>
-            (c.nome ?? "").toLowerCase().includes(t)
-        );
+        const filtrados = allClientes.filter((c) => {
+            const nome = (c.nome ?? "").toLowerCase();
+            const cpf = (c.cpf ?? "").toLowerCase();
+
+            return nome.includes(t) || cpf.includes(t);
+        });
 
         setClientes(filtrados);
         setCurrentPage(1);
     }
+
 
     // Abrir modal
     function abrirModal(cliente: Cliente) {

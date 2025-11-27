@@ -41,9 +41,13 @@ export default function ProdutoBody() {
             return;
         }
 
-        const filtrados = allProdutos.filter((p) =>
-            (p.nome ?? "").toString().toLowerCase().includes(q)
-        );
+        const filtrados = allProdutos.filter((p) => {
+            const nome = (p.nome ?? "").toLowerCase();
+            const categoria = (p.categoria ?? "").toLowerCase();
+
+            return nome.includes(q) || categoria.includes(q);
+        });
+
         setProdutos(filtrados);
         setCurrentPage(1);
     }
@@ -75,14 +79,17 @@ export default function ProdutoBody() {
     }
 
     return (
-        <PageLayout title="Produtos">
+        <PageLayout id="prod-page" title="Produtos">
+
             <SearchBar
+                id="prod-searchbar"
                 placeholder="Buscar:"
                 onAdd={() => navigate("/Produtos/CadastrarProduto")}
                 onSearch={handleSearch}
             />
 
             <DataTable
+                id="prod-table"
                 columns={[
                     "ID",
                     "NOME",
@@ -105,14 +112,19 @@ export default function ProdutoBody() {
                 }}
                 onDelete={(id) => {
                     const p = produtos.find((prod) => prod.id === id);
-                    if (p) abrirModal(p);   // ⚠️ AGORA ABRE O MODAL DIRETO!
+                    if (p) abrirModal(p);
                 }}
+                rowIdPrefix="prod-row"
+                editButtonIdPrefix="prod-edit"
+                deleteButtonIdPrefix="prod-delete"
             />
 
             <Pagination
+                id="prod-pagination"
                 currentPage={currentPage}
                 totalPages={Math.max(1, Math.ceil(produtos.length / 10))}
                 onPageChange={(p) => setCurrentPage(p)}
+                pageButtonIdPrefix="prod-page-btn"
             />
 
             {modalAberto && produtoSelecionado && (

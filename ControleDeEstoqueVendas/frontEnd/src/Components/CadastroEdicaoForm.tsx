@@ -96,6 +96,39 @@ export default function CadastroEdicaoForm({
     }
   }
 
+  async function salvarVenda() {
+    const clienteIdRaw = formData.clienteId;
+
+    const clienteId = Number(
+        typeof clienteIdRaw === "string"
+            ? clienteIdRaw.split(" - ")[0]
+            : clienteIdRaw
+    );
+
+    const payload = {
+      clienteId,
+      itens: formData.itens.map((i: any) => ({
+        produtoId: Number(
+            typeof i.produtoId === "string"
+                ? i.produtoId.split(" - ")[0]
+                : i.produtoId
+        ),
+        quantidade: Number(i.quantidade),
+      })),
+    };
+
+    if (modo === "cadastrar") {
+      const { criarVenda } = await import("../api/vendaService");
+      await criarVenda(payload);
+    } else if (modo === "editar" && id) {
+      const { editarVenda } = await import("../api/vendaService");
+      await editarVenda(Number(id), payload);
+    }
+  }
+
+
+
+
   async function salvar() {
     setLoading(true);
 
@@ -104,11 +137,12 @@ export default function CadastroEdicaoForm({
         await salvarProduto();
       } else if (tipo === "cliente") {
         await salvarCliente();
+      } else if (tipo === "venda") {
+        await salvarVenda();
       }
 
       alert("Salvo com sucesso!");
       navigate(-1);
-
     } catch (err) {
       console.error(err);
       alert("Erro ao salvar. Veja o console.");

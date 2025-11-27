@@ -24,3 +24,17 @@ html, body, #root {
 body {
   background-color: #d8e3db;
 }
+
+/* src/index.css ou src/App.css */
+
+/* Remove os spinners no Chrome, Edge e Safari */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove os spinners no Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
