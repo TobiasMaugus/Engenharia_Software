@@ -41,12 +41,17 @@ export default function ProdutoBody() {
             return;
         }
 
-        const filtrados = allProdutos.filter((p) =>
-            (p.nome ?? "").toString().toLowerCase().includes(q)
-        );
+        const filtrados = allProdutos.filter((p) => {
+            const nome = (p.nome ?? "").toLowerCase();
+            const categoria = (p.categoria ?? "").toLowerCase();
+
+            return nome.includes(q) || categoria.includes(q);
+        });
+
         setProdutos(filtrados);
         setCurrentPage(1);
     }
+
 
     function abrirModal(produto: Produto) {
         setProdutoSelecionado(produto);
@@ -105,7 +110,7 @@ export default function ProdutoBody() {
                 }}
                 onDelete={(id) => {
                     const p = produtos.find((prod) => prod.id === id);
-                    if (p) abrirModal(p);   // ⚠️ AGORA ABRE O MODAL DIRETO!
+                    if (p) abrirModal(p);
                 }}
             />
 
