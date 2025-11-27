@@ -52,7 +52,6 @@ export default function ProdutoBody() {
         setCurrentPage(1);
     }
 
-
     function abrirModal(produto: Produto) {
         setProdutoSelecionado(produto);
         setModalAberto(true);
@@ -80,14 +79,17 @@ export default function ProdutoBody() {
     }
 
     return (
-        <PageLayout title="Produtos">
+        <PageLayout id="prod-page" title="Produtos">
+
             <SearchBar
+                id="prod-searchbar"
                 placeholder="Buscar:"
                 onAdd={() => navigate("/Produtos/CadastrarProduto")}
                 onSearch={handleSearch}
             />
 
             <DataTable
+                id="prod-table"
                 columns={[
                     "ID",
                     "NOME",
@@ -112,12 +114,17 @@ export default function ProdutoBody() {
                     const p = produtos.find((prod) => prod.id === id);
                     if (p) abrirModal(p);
                 }}
+                rowIdPrefix="prod-row"
+                editButtonIdPrefix="prod-edit"
+                deleteButtonIdPrefix="prod-delete"
             />
 
             <Pagination
+                id="prod-pagination"
                 currentPage={currentPage}
                 totalPages={Math.max(1, Math.ceil(produtos.length / 10))}
                 onPageChange={(p) => setCurrentPage(p)}
+                pageButtonIdPrefix="prod-page-btn"
             />
 
             {modalAberto && produtoSelecionado && (
