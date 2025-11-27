@@ -97,17 +97,36 @@ export default function CadastroEdicaoForm({
   }
 
   async function salvarVenda() {
+    const clienteIdRaw = formData.clienteId;
+
+    const clienteId = Number(
+        typeof clienteIdRaw === "string"
+            ? clienteIdRaw.split(" - ")[0]
+            : clienteIdRaw
+    );
+
     const payload = {
-      clienteId: Number(formData.clienteId),
+      clienteId,
       itens: formData.itens.map((i: any) => ({
-        produtoId: Number(i.produtoId),
+        produtoId: Number(
+            typeof i.produtoId === "string"
+                ? i.produtoId.split(" - ")[0]
+                : i.produtoId
+        ),
         quantidade: Number(i.quantidade),
       })),
     };
 
-    const { criarVenda } = await import("../api/vendaService");
-    await criarVenda(payload);
+    if (modo === "cadastrar") {
+      const { criarVenda } = await import("../api/vendaService");
+      await criarVenda(payload);
+    } else if (modo === "editar" && id) {
+      const { editarVenda } = await import("../api/vendaService");
+      await editarVenda(Number(id), payload);
+    }
   }
+
+
 
 
   async function salvar() {
