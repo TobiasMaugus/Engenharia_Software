@@ -17,6 +17,7 @@ export default function ExcluirVendaModal({ venda, onConfirm, onCancel }: Exclui
 
           {/* Botão de voltar/cancelar */}
           <button
+              id={"back-btn"}
               onClick={onCancel}
               className="absolute right-8 top-8 bg-[#8EB9AE] p-2 rounded-md hover:bg-[#7aa59b] transition"
           >
@@ -77,12 +78,14 @@ export default function ExcluirVendaModal({ venda, onConfirm, onCancel }: Exclui
           {/* Botões de confirmação */}
           <div className="flex gap-10 mt-6 justify-center">
             <button
+                id={"confirm-btn"}
                 onClick={onConfirm}
                 className="bg-[#A5563D] text-white text-lg font-semibold px-10 py-3 rounded-md hover:bg-[#8d4632] transition"
             >
               Confirmar Exclusão
             </button>
             <button
+                id={"cancel-btn"}
                 onClick={onCancel}
                 className="bg-[#3A7A78] text-white text-lg font-semibold px-10 py-3 rounded-md hover:bg-[#316866] transition"
             >
