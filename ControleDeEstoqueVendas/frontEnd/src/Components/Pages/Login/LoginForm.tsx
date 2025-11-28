@@ -34,6 +34,7 @@ export default function Login() {
                     <div className="flex items-center bg-[#9aa79b] rounded-md px-3 py-2">
                         <FaUser className="text-[#2d3c3b] mr-3 text-lg" />
                         <input
+                            id={"username"}
                             type="text"
                             placeholder="Usuário"
                             value={username}
@@ -45,6 +46,7 @@ export default function Login() {
                     <div className="flex items-center bg-[#9aa79b] rounded-md px-3 py-2">
                         <FaKey className="text-[#2d3c3b] mr-3 text-lg" />
                         <input
+                            id={"password"}
                             type="password"
                             placeholder="Senha"
                             value={password}

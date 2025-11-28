@@ -14,12 +14,13 @@ import java.sql.Driver;
 import java.time.Duration;
 
 public class DriverFactory {
-	private static final boolean HEADLESS = true;
+	private static final boolean HEADLESS = false;
 
 	public static WebDriver getDriver() {
 		WebDriverManager.chromedriver().setup();
 
 		ChromeOptions options = new ChromeOptions();
+		options.addArguments("user-data-dir=/home/luisturola/chrome/chrome-test-profile");
 		options.addArguments("--no-sandbox");
 		options.addArguments("--disable-dev-shm-usage");
 		options.addArguments("--disable-blink-features=AutomationControlled");

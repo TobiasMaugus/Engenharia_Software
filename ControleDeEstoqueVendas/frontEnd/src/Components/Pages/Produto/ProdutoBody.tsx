@@ -38,6 +38,8 @@ export default function ProdutoBody() {
         fetchProdutos();
     }, []);
 
+    console.table(allProdutos);
+
     function handleSearch(term: string) {
         const t = (term || "").trim().toLowerCase();
         if (!t) {
@@ -77,7 +79,7 @@ export default function ProdutoBody() {
     const endIndex = startIndex + pageSize;
     const produtosPaginados = produtos.slice(startIndex, endIndex);
 
-    const columns = ["ID", "NOME", "CATEGORIA", "PREÇO"];
+    const columns = ["ID", "NOME", "CATEGORIA","Estoque", "PREÇO"];
     if (isGerente) {
         columns.push("EDITAR", "EXCLUIR");
     }
@@ -96,6 +98,7 @@ export default function ProdutoBody() {
                     id: p.id,
                     nome: p.nome,
                     categoria: p.categoria,
+                    estoque: p.quantidadeEstoque,
                     preco: p.preco,
                 }))}
                 onEdit={isGerente ? (id) => {
