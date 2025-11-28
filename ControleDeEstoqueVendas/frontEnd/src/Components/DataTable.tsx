@@ -22,7 +22,7 @@ export default function DataTable({columns, data, onView, onEdit, onDelete}: Dat
                 </tr>
                 </thead>
 
-                <tbody>
+                <tbody id={"tabe-body"}>
                 {data.map((row: any, index: number) => (
                     <tr key={index} className="bg-[#4a5b59] text-white border-b border-[#39746a]">
                         {/* células com os dados */}

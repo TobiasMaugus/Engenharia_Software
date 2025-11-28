@@ -84,6 +84,7 @@ export default function FormProduto({ modo }: { modo: "cadastrar" | "editar" }) 
                 />
 
                 <button
+                    id={"salvar-btn"}
                     onClick={salvar}
                     disabled={loading}
                     className="bg-[#8EB9AE] text-white font-bold text-lg px-10 py-3 mt-6 rounded-md hover:bg-[#7aa59b]"

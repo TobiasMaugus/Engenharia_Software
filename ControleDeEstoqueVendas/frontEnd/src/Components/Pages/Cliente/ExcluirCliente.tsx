@@ -14,6 +14,7 @@ export default function ExcluirCliente() {
                     <h2 className="text-3xl font-bold">Nenhum cliente foi selecionado</h2>
                     <p className="text-gray-300">Você acessou esta página diretamente.</p>
                     <button
+                        id={"back-btn"}
                         onClick={() => navigate("/Clientes")}
                         className="bg-[#3A7A78] px-8 py-3 rounded-lg hover:bg-[#316866]"
                     >

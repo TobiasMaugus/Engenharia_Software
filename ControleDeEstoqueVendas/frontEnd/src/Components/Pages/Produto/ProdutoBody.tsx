@@ -45,11 +45,13 @@ export default function ProdutoBody() {
             return;
         }
         const filtrados = allProdutos.filter((p) =>
-            (p.nome ?? "").toLowerCase().includes(t)
+            (p.nome ?? "").toLowerCase().includes(t) ||
+            (p.categoria?? "").toLowerCase().includes(t)
         );
         setProdutos(filtrados);
         setCurrentPage(1);
     }
+
 
     function abrirModal(produto: Produto) {
         setProdutoSelecionado(produto);
@@ -75,7 +77,7 @@ export default function ProdutoBody() {
     const endIndex = startIndex + pageSize;
     const produtosPaginados = produtos.slice(startIndex, endIndex);
 
-    const columns = ["ID", "NOME", "PREÇO"];
+    const columns = ["ID", "NOME", "CATEGORIA", "PREÇO"];
     if (isGerente) {
         columns.push("EDITAR", "EXCLUIR");
     }
@@ -93,6 +95,7 @@ export default function ProdutoBody() {
                 data={produtosPaginados.map((p) => ({
                     id: p.id,
                     nome: p.nome,
+                    categoria: p.categoria,
                     preco: p.preco,
                 }))}
                 onEdit={isGerente ? (id) => {

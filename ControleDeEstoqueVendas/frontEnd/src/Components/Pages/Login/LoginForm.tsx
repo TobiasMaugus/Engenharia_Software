@@ -58,6 +58,7 @@ export default function Login() {
                     )}
 
                     <button
+                        id={"entrar-btn"}
                         onClick={handleLogin}
                         className="w-full bg-[#9aa79b] text-[#2d3c3b] py-2 rounded-md font-medium hover:bg-[#b4bfb3] transition-colors"
                     >

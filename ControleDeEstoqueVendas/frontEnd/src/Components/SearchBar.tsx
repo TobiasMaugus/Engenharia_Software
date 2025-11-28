@@ -32,6 +32,7 @@ export default function SearchBar({ placeholder, onAdd, onSearch }: SearchBarPro
             />
 
             <button
+                id={"add-btn"}
                 type="button"
                 onClick={onAdd}
                 className="bg-[#94b1a0] text-[#2d3c3b] p-2 rounded-md hover:bg-[#a8b9a8] transition-colors"
