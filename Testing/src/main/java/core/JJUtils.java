@@ -41,6 +41,12 @@ public class JJUtils {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elementId))).sendKeys(value);
 	}
 
+	public void selectDropdown(String elementId, String value) {
+		wait.until(ExpectedConditions.elementToBeClickable(By.id(elementId))).click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elementId))).sendKeys(value);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elementId))).sendKeys(Keys.ENTER);
+	}
+
 	public boolean asssertTextInElement(String elementId, String value) {
 		return wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(elementId))).getText().contains(value);
 	}
