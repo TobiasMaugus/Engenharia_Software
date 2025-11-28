@@ -1,14 +1,15 @@
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import PageLayout from "../../PageLayout";
 import SearchBar from "../../SearchBar";
 import DataTable from "../../DataTable";
 import Pagination from "../../Pagination";
-
 import ExcluirModal from "../../ModalExcluir";
-import {listarProdutos, excluirProduto} from "../../../api/produtoService";
-import type {Produto} from "../../../types/Produto";
+import { listarProdutos, excluirProduto } from "../../../api/produtoService";
+import type { Produto } from "../../../types/Produto";
+
+import { getUserFromToken } from "../../../api/auth";
 
 export default function ProdutoBody() {
     const navigate = useNavigate();
@@ -20,6 +21,10 @@ export default function ProdutoBody() {
     const [modalAberto, setModalAberto] = useState(false);
     const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(null);
 
+    // Pega o usuário logado
+    const user = getUserFromToken();
+    const isGerente = user?.role === "GERENTE";
+
     useEffect(() => {
         async function fetchProdutos() {
             try {
@@ -30,24 +35,18 @@ export default function ProdutoBody() {
                 console.error("Erro ao carregar produtos:", error);
             }
         }
-
         fetchProdutos();
     }, []);
 
     function handleSearch(term: string) {
-        const q = (term || "").trim().toLowerCase();
-        if (!q) {
+        const t = (term || "").trim().toLowerCase();
+        if (!t) {
             setProdutos(allProdutos);
             return;
         }
-
-        const filtrados = allProdutos.filter((p) => {
-            const nome = (p.nome ?? "").toLowerCase();
-            const categoria = (p.categoria ?? "").toLowerCase();
-
-            return nome.includes(q) || categoria.includes(q);
-        });
-
+        const filtrados = allProdutos.filter((p) =>
+            (p.nome ?? "").toLowerCase().includes(t)
+        );
         setProdutos(filtrados);
         setCurrentPage(1);
     }
@@ -59,72 +58,57 @@ export default function ProdutoBody() {
 
     async function confirmarExclusao() {
         if (!produtoSelecionado) return;
-
         try {
             await excluirProduto(produtoSelecionado.id!);
-
-            setAllProdutos((prev) =>
-                prev.filter((p) => p.id !== produtoSelecionado.id)
-            );
-
-            setProdutos((prev) =>
-                prev.filter((p) => p.id !== produtoSelecionado.id)
-            );
+            setAllProdutos((prev) => prev.filter((p) => p.id !== produtoSelecionado.id));
+            setProdutos((prev) => prev.filter((p) => p.id !== produtoSelecionado.id));
         } catch (error) {
-            console.error("Erro ao excluir:", error);
+            console.error("Erro ao excluir produto:", error);
         } finally {
             setModalAberto(false);
             setProdutoSelecionado(null);
         }
     }
 
-    return (
-        <PageLayout id="prod-page" title="Produtos">
+    const pageSize = 10;
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const produtosPaginados = produtos.slice(startIndex, endIndex);
 
+    const columns = ["ID", "NOME", "PREÇO"];
+    if (isGerente) {
+        columns.push("EDITAR", "EXCLUIR");
+    }
+
+    return (
+        <PageLayout title="Produtos">
             <SearchBar
-                id="prod-searchbar"
                 placeholder="Buscar:"
                 onAdd={() => navigate("/Produtos/CadastrarProduto")}
                 onSearch={handleSearch}
             />
 
             <DataTable
-                id="prod-table"
-                columns={[
-                    "ID",
-                    "NOME",
-                    "CATEGORIA",
-                    "PREÇO",
-                    "QUANTIDADE",
-                    "EDITAR",
-                    "EXCLUIR",
-                ]}
-                data={produtos.map((p) => ({
+                columns={columns}
+                data={produtosPaginados.map((p) => ({
                     id: p.id,
                     nome: p.nome,
-                    categoria: p.categoria,
-                    preco: Number(p.preco).toFixed(2).replace(".", ","),
-                    quantidade: p.quantidadeEstoque,
+                    preco: p.preco,
                 }))}
-                onEdit={(id) => {
-                    const p = produtos.find((prod) => prod.id === id);
-                    if (p) navigate(`/Produtos/EditarProduto/${id}`, {state: {produto: p}});
-                }}
-                onDelete={(id) => {
-                    const p = produtos.find((prod) => prod.id === id);
-                    if (p) abrirModal(p);
-                }}
-                rowIdPrefix="prod-row"
-                editButtonIdPrefix="prod-edit"
-                deleteButtonIdPrefix="prod-delete"
+                onEdit={isGerente ? (id) => {
+                    const prod = produtos.find((x) => x.id === id);
+                    if (prod) navigate(`/Produtos/EditarProduto/${id}`, { state: { produto: prod } });
+                } : undefined}
+                onDelete={isGerente ? (id) => {
+                    const prod = produtos.find((x) => x.id === id);
+                    if (prod) abrirModal(prod);
+                } : undefined}
             />
 
             <Pagination
-                id="prod-pagination"
                 currentPage={currentPage}
-                totalPages={Math.max(1, Math.ceil(produtos.length / 10))}
+                totalPages={Math.max(1, Math.ceil(produtos.length / pageSize))}
                 onPageChange={(p) => setCurrentPage(p)}
-                pageButtonIdPrefix="prod-page-btn"
             />
 
             {modalAberto && produtoSelecionado && (

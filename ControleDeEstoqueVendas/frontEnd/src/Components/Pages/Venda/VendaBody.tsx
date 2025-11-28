@@ -9,8 +9,12 @@ import Pagination from "../../Pagination";
 import { listarVendas, excluirVenda } from "../../../api/vendaService";
 import type { Venda } from "../../../types/Venda";
 
+import { getUserFromToken } from "../../../api/auth";
+
 export default function VendaBody() {
     const navigate = useNavigate();
+    const user = getUserFromToken();
+    const isGerente = user?.role === "GERENTE";
 
     const [vendas, setVendas] = useState<Venda[]>([]);
     const [allVendas, setAllVendas] = useState<Venda[]>([]);
@@ -35,7 +39,7 @@ export default function VendaBody() {
 
         carregar();
     }, [currentPage]);
-    
+
     function handleSearch(term: string) {
         const q = (term || "").trim().toLowerCase();
 
@@ -79,10 +83,7 @@ export default function VendaBody() {
 
             const d = new Date(v.dataVenda).getTime();
 
-            return (
-                (ini === null || d >= ini) &&
-                (fim === null || d <= fim)
-            );
+            return (ini === null || d >= ini) && (fim === null || d <= fim);
         });
 
         setVendas(filtrados);
@@ -106,10 +107,14 @@ export default function VendaBody() {
         }
     }
 
+    // Colunas condicionais
+    const columns = ["ID", "VENDEDOR", "CLIENTE", "VALOR", "DATA", "DETALHES"];
+    if (isGerente) {
+        columns.push("EDITAR", "EXCLUIR");
+    }
+
     return (
         <PageLayout title="Vendas">
-
-
             <div style={{ marginBottom: "10px" }}>
                 <SearchBar
                     placeholder="Buscar por ID, vendedor ou cliente..."
@@ -126,30 +131,19 @@ export default function VendaBody() {
                     alignItems: "center",
                 }}
             >
+                {/* Inputs de data continuam iguais */}
                 <input
                     type="text"
                     value={dataInicial}
                     onChange={(e) => {
                         let v = e.target.value.replace(/\D/g, "");
-
                         if (v.length > 8) v = v.slice(0, 8);
-                        if (v.length >= 5)
-                            v = v.replace(/(\d{2})(\d{2})(\d+)/, "$1/$2/$3");
-                        else if (v.length >= 3)
-                            v = v.replace(/(\d{2})(\d+)/, "$1/$2");
-
+                        if (v.length >= 5) v = v.replace(/(\d{2})(\d{2})(\d+)/, "$1/$2/$3");
+                        else if (v.length >= 3) v = v.replace(/(\d{2})(\d+)/, "$1/$2");
                         setDataInicial(v);
                     }}
                     placeholder="Data inicial"
-                    style={{
-                        padding: "10px 14px",
-                        height: "38px",
-                        borderRadius: "8px",
-                        border: "1px solid #ccc",
-                        fontSize: "14px",
-                        outline: "none",
-                        boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-                    }}
+                    style={{ padding: "10px 14px", height: "38px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "14px", outline: "none", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}
                 />
 
                 <input
@@ -157,57 +151,31 @@ export default function VendaBody() {
                     value={dataFinal}
                     onChange={(e) => {
                         let v = e.target.value.replace(/\D/g, "");
-
                         if (v.length > 8) v = v.slice(0, 8);
-                        if (v.length >= 5)
-                            v = v.replace(/(\d{2})(\d{2})(\d+)/, "$1/$2/$3");
-                        else if (v.length >= 3)
-                            v = v.replace(/(\d{2})(\d+)/, "$1/$2");
-
+                        if (v.length >= 5) v = v.replace(/(\d{2})(\d{2})(\d+)/, "$1/$2/$3");
+                        else if (v.length >= 3) v = v.replace(/(\d{2})(\d+)/, "$1/$2");
                         setDataFinal(v);
                     }}
                     placeholder="Data final"
-                    style={{
-                        padding: "10px 14px",
-                        height: "38px",
-                        borderRadius: "8px",
-                        border: "1px solid #ccc",
-                        fontSize: "14px",
-                        outline: "none",
-                        boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-                    }}
+                    style={{ padding: "10px 14px", height: "38px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "14px", outline: "none", boxShadow: "0 1px 2px rgba(0,0,0,0.1)" }}
                 />
             </div>
 
             <DataTable
-                columns={[
-                    "ID",
-                    "VENDEDOR",
-                    "CLIENTE",
-                    "VALOR",
-                    "DATA",
-                    "DETALHES",
-                    "EDITAR",
-                    "EXCLUIR",
-                ]}
+                columns={columns}
                 data={vendas.map((v) => ({
                     id: v.id,
                     vendedor: v.vendedorNome ?? "—",
                     cliente: v.clienteNome ?? "—",
-                    valor:
-                        typeof v.valorTotal === "number"
-                            ? v.valorTotal.toFixed(2).replace(".", ",")
-                            : "0,00",
-                    data: v.dataVenda
-                        ? new Date(v.dataVenda).toLocaleDateString("pt-BR")
-                        : "—",
+                    valor: typeof v.valorTotal === "number" ? v.valorTotal.toFixed(2).replace(".", ",") : "0,00",
+                    data: v.dataVenda ? new Date(v.dataVenda).toLocaleDateString("pt-BR") : "—",
                 }))}
                 onView={(id) => {
                     const venda = vendas.find((v) => v.id === id);
                     navigate(`/Vendas/VisualizarVenda/${id}`, { state: venda });
                 }}
-                onEdit={(id) => navigate(`/Vendas/EditarVenda/${id}`)}
-                onDelete={(id) => handleDelete(id)}
+                onEdit={isGerente ? (id) => navigate(`/Vendas/EditarVenda/${id}`) : undefined}
+                onDelete={isGerente ? (id) => handleDelete(id) : undefined}
             />
 
             <Pagination
