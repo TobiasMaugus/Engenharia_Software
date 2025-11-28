@@ -23,7 +23,6 @@ export default function ClienteBody() {
     const [modalAberto, setModalAberto] = useState(false);
     const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null);
 
-    // Carregar clientes
     useEffect(() => {
         async function fetchClientes() {
             try {
@@ -37,7 +36,6 @@ export default function ClienteBody() {
         fetchClientes();
     }, []);
 
-    // Busca
     function handleSearch(term: string) {
         const t = (term || "").trim().toLowerCase();
 
@@ -46,25 +44,19 @@ export default function ClienteBody() {
             return;
         }
 
-        const filtrados = allClientes.filter((c) => {
-            const nome = (c.nome ?? "").toLowerCase();
-            const cpf = (c.cpf ?? "").toLowerCase();
-
-            return nome.includes(t) || cpf.includes(t);
-        });
+        const filtrados = allClientes.filter((c) =>
+            (c.nome ?? "").toLowerCase().includes(t)
+        );
 
         setClientes(filtrados);
         setCurrentPage(1);
     }
 
-
-    // Abrir modal
     function abrirModal(cliente: Cliente) {
         setClienteSelecionado(cliente);
         setModalAberto(true);
     }
 
-    // Confirmar exclusão
     async function confirmarExclusao() {
         if (!clienteSelecionado) return;
 
@@ -81,6 +73,15 @@ export default function ClienteBody() {
         }
     }
 
+    // -------------------------
+    // PAGINAÇÃO CORRETA AQUI!
+    // -------------------------
+    const pageSize = 10;
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+
+    const clientesPaginados = clientes.slice(startIndex, endIndex);
+
     return (
         <PageLayout title="Clientes">
             <SearchBar
@@ -91,7 +92,7 @@ export default function ClienteBody() {
 
             <DataTable
                 columns={["ID", "NOME", "TELEFONE", "CPF", "EDITAR", "EXCLUIR"]}
-                data={clientes.map((c) => ({
+                data={clientesPaginados.map((c) => ({
                     id: c.id,
                     nome: c.nome,
                     telefone: c.telefone,
@@ -109,7 +110,7 @@ export default function ClienteBody() {
 
             <Pagination
                 currentPage={currentPage}
-                totalPages={Math.max(1, Math.ceil(clientes.length / 10))}
+                totalPages={Math.max(1, Math.ceil(clientes.length / pageSize))}
                 onPageChange={(p) => setCurrentPage(p)}
             />
 

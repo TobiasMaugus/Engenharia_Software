@@ -5,6 +5,9 @@ export type LoginResult =
     | { success: true; token: string }
     | { success: false; message: string };
 
+// -------------------------------
+// LOGIN
+// -------------------------------
 export const loginRequest = async (
     username: string,
     password: string
@@ -25,3 +28,39 @@ export const loginRequest = async (
         return { success: false, message: "Erro no servidor" };
     }
 };
+
+// -------------------------------
+// TIPOS DO USUÁRIO DECODIFICADO
+// -------------------------------
+export interface DecodedUser {
+    username: string;
+    role: string;
+}
+
+// -------------------------------
+// DECODIFICA O TOKEN JWT
+// -------------------------------
+export function decodeToken(token: string): DecodedUser | null {
+    try {
+        const payloadBase64 = token.split(".")[1];
+        const jsonPayload = atob(payloadBase64);
+        const payload = JSON.parse(jsonPayload);
+
+        return {
+            username: payload.sub ?? "Usuário",
+            role: payload.roles?.[0] ?? "Sem função",
+        };
+    } catch (e) {
+        console.error("Erro ao decodificar token:", e);
+        return null;
+    }
+}
+
+// -------------------------------
+// PEGA USUÁRIO LOGADO DO LOCALSTORAGE
+// -------------------------------
+export function getUserFromToken(): DecodedUser | null {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    return decodeToken(token);
+}
