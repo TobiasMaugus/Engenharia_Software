@@ -19,6 +19,7 @@ export default function VisualizarVenda() {
             <div className="relative flex flex-col gap-4 bg-[#455150] p-8 rounded-2xl shadow-lg max-w-4xl w-full mx-auto">
 
                 <button
+                    id={"back-btn"}
                     onClick={() => navigate(-1)}
                     className="absolute right-8 top-8 bg-[#8EB9AE] p-2 rounded-md hover:bg-[#7aa59b] transition"
                 >
@@ -29,19 +30,19 @@ export default function VisualizarVenda() {
                     Detalhes da Venda #{venda.id}
                 </h1>
 
-                <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+                <div id={"vendedor-nome-text"} className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
                     Vendedor: {venda.vendedorNome}
                 </div>
 
-                <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+                <div id={"cliente-nome-text"} className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
                     Cliente: {venda.clienteNome}
                 </div>
 
-                <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+                <div id={"data-venda-text"} className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
                     Data da Venda: {new Date(venda.dataVenda).toLocaleDateString("pt-BR")}
                 </div>
 
-                <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+                <div id={"valor-total-text"} className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
                     Valor Total: R$ {venda.valorTotal.toFixed(2).replace(".", ",")}
                 </div>
 
@@ -60,7 +61,7 @@ export default function VisualizarVenda() {
                         </tr>
                         </thead>
 
-                        <tbody className="bg-[#2F3A3A] text-white">
+                        <tbody id={"produtos-venda-table"} className="bg-[#2F3A3A] text-white">
                         {venda.itens?.map((item: any) => (
                             <tr key={`${item.id.vendaId}-${item.id.produtoId}`}>
                                 <td className="border border-gray-600 p-2">

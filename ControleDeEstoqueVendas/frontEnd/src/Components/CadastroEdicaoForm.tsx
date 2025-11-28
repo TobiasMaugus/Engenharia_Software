@@ -158,6 +158,7 @@ export default function CadastroEdicaoForm({
           <h2 className="text-2xl font-bold mb-6">{titulo}</h2>
 
           <button
+              id={"back-btn"}
               onClick={() => navigate(-1)}
               className="absolute right-8 top-8 bg-[#8EB9AE] p-2 rounded-md hover:bg-[#7aa59b] transition"
           >
@@ -180,6 +181,7 @@ export default function CadastroEdicaoForm({
 
             {modo !== "view" && (
                 <button
+                    id={"salvar-btn"}
                     type="submit"
                     disabled={loading}
                     className="bg-[#8EB9AE] text-white font-bold text-lg px-10 py-3 mt-6 rounded-md hover:bg-[#7aa59b]"

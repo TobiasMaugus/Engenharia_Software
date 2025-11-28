@@ -19,6 +19,7 @@ export default function SearchBar({ placeholder, onAdd, onSearch }: SearchBarPro
     return (
         <div className="flex justify-between items-center mb-4">
             <input
+                id={"searchbar"}
                 type="text"
                 placeholder={placeholder}
                 value={value}

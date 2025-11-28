@@ -1,5 +1,98 @@
-import ExcluirModal from "../../ModalExcluir";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import type { Venda } from "../../../types/Venda";
 
-export default function ExcluirVenda() {
-  return <ExcluirModal tipo="Venda" itemNome="Venda #12345" />;
+interface ExcluirVendaModalProps {
+  venda: Venda;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export default function ExcluirVendaModal({ venda, onConfirm, onCancel }: ExcluirVendaModalProps) {
+  const navigate = useNavigate();
+
+  return (
+      <main className="flex-grow flex justify-center items-center bg-black/50 fixed inset-0 z-50">
+        <div className="relative flex flex-col gap-4 bg-[#455150] p-8 rounded-2xl shadow-lg max-w-4xl w-full mx-auto">
+
+          {/* Botão de voltar/cancelar */}
+          <button
+              id={"back-btn"}
+              onClick={onCancel}
+              className="absolute right-8 top-8 bg-[#8EB9AE] p-2 rounded-md hover:bg-[#7aa59b] transition"
+          >
+            <ArrowLeft className="text-white" />
+          </button>
+
+          <h1 className="text-white text-2xl font-bold mb-4">
+            Detalhes da Venda #{venda.id}
+          </h1>
+
+          <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+            Vendedor: {venda.vendedorNome}
+          </div>
+
+          <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+            Cliente: {venda.clienteNome}
+          </div>
+
+          <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+            Data da Venda: {new Date(venda.dataVenda).toLocaleDateString("pt-BR")}
+          </div>
+
+          <div className="bg-[#357F7D] text-white px-4 py-2 rounded-md">
+            Valor Total: R$ {venda.valorTotal.toFixed(2).replace(".", ",")}
+          </div>
+
+          <h2 className="text-white text-xl font-semibold mt-6">
+            Produtos da Venda
+          </h2>
+
+          <div className="overflow-x-auto rounded-md shadow">
+            <table className="min-w-full border-collapse">
+              <thead className="bg-[#357F7D] text-white">
+              <tr>
+                <th className="border border-gray-500 p-2">Produto</th>
+                <th className="border border-gray-500 p-2">Quantidade</th>
+                <th className="border border-gray-500 p-2">Preço Unitário</th>
+                <th className="border border-gray-500 p-2">Subtotal</th>
+              </tr>
+              </thead>
+              <tbody className="bg-[#2F3A3A] text-white">
+              {venda.itens?.map((item: any) => (
+                  <tr key={`${item.id.vendaId}-${item.id.produtoId}`}>
+                    <td className="border border-gray-600 p-2">{item.produto?.nome}</td>
+                    <td className="border border-gray-600 p-2">{item.quantidade}</td>
+                    <td className="border border-gray-600 p-2">
+                      R$ {item.precoUnitario.toFixed(2).replace(".", ",")}
+                    </td>
+                    <td className="border border-gray-600 p-2">
+                      R$ {(item.precoUnitario * item.quantidade).toFixed(2).replace(".", ",")}
+                    </td>
+                  </tr>
+              ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Botões de confirmação */}
+          <div className="flex gap-10 mt-6 justify-center">
+            <button
+                id={"confirm-btn"}
+                onClick={onConfirm}
+                className="bg-[#A5563D] text-white text-lg font-semibold px-10 py-3 rounded-md hover:bg-[#8d4632] transition"
+            >
+              Confirmar Exclusão
+            </button>
+            <button
+                id={"cancel-btn"}
+                onClick={onCancel}
+                className="bg-[#3A7A78] text-white text-lg font-semibold px-10 py-3 rounded-md hover:bg-[#316866] transition"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </main>
+  );
 }

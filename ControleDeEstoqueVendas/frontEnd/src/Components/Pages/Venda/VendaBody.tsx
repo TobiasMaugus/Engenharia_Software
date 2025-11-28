@@ -10,6 +10,7 @@ import { listarVendas, excluirVenda } from "../../../api/vendaService";
 import type { Venda } from "../../../types/Venda";
 
 import { getUserFromToken } from "../../../api/auth";
+import ExcluirVenda from "./ExcluirVenda"; // ✅ import do modal
 
 export default function VendaBody() {
     const navigate = useNavigate();
@@ -23,6 +24,9 @@ export default function VendaBody() {
 
     const [dataInicial, setDataInicial] = useState("");
     const [dataFinal, setDataFinal] = useState("");
+
+    // ✅ novo estado para o modal
+    const [vendaParaExcluir, setVendaParaExcluir] = useState<Venda | null>(null);
 
     useEffect(() => {
         async function carregar() {
@@ -93,15 +97,17 @@ export default function VendaBody() {
         aplicarFiltroData(allVendas);
     }, [dataInicial, dataFinal]);
 
-    async function handleDelete(id: number) {
-        if (!confirm("Tem certeza que deseja excluir esta venda?")) return;
+    // ✅ função para confirmar exclusão via modal
+    async function handleConfirmDelete() {
+        if (!vendaParaExcluir) return;
 
         try {
-            await excluirVenda(id);
+            await excluirVenda(vendaParaExcluir.id);
 
-            const novaLista = vendas.filter((v) => v.id !== id);
+            const novaLista = vendas.filter((v) => v.id !== vendaParaExcluir.id);
             setVendas(novaLista);
             setAllVendas(novaLista);
+            setVendaParaExcluir(null);
         } catch (error) {
             console.error("Erro ao excluir:", error);
         }
@@ -131,7 +137,6 @@ export default function VendaBody() {
                     alignItems: "center",
                 }}
             >
-                {/* Inputs de data continuam iguais */}
                 <input
                     type="text"
                     value={dataInicial}
@@ -175,7 +180,10 @@ export default function VendaBody() {
                     navigate(`/Vendas/VisualizarVenda/${id}`, { state: venda });
                 }}
                 onEdit={isGerente ? (id) => navigate(`/Vendas/EditarVenda/${id}`) : undefined}
-                onDelete={isGerente ? (id) => handleDelete(id) : undefined}
+                onDelete={isGerente ? (id) => {
+                    const v = vendas.find((v) => v.id === id);
+                    if (v) setVendaParaExcluir(v); // ✅ abre modal
+                } : undefined}
             />
 
             <Pagination
@@ -183,6 +191,15 @@ export default function VendaBody() {
                 totalPages={totalPages}
                 onPageChange={(p) => setCurrentPage(p - 1)}
             />
+
+            {/* ✅ renderiza modal se houver vendaParaExcluir */}
+            {vendaParaExcluir && (
+                <ExcluirVenda
+                    venda={vendaParaExcluir}
+                    onConfirm={handleConfirmDelete}
+                    onCancel={() => setVendaParaExcluir(null)}
+                />
+            )}
         </PageLayout>
     );
 }

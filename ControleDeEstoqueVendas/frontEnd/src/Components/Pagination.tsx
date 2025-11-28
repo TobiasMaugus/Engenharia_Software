@@ -10,6 +10,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
 
             {/* Voltar */}
             <button
+                id={"paginator-before-btn"}
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="disabled:opacity-40"
@@ -30,6 +31,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: Pa
 
             {/* Avançar */}
             <button
+                id={"paginator-next-btn"}
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="disabled:opacity-40"

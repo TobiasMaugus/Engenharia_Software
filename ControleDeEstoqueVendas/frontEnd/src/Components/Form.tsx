@@ -46,6 +46,7 @@ export default function Formulario({
         <div className="flex flex-col gap-4">
             {campos.map((campo) => {
                 const disabled = somenteLeitura || campo.readOnly;
+                const inputId = campo.name;
 
                 if (campo.type === "itensVenda") {
                     const produtos = campo.produtos ?? [];
@@ -57,6 +58,7 @@ export default function Formulario({
 
                             {/* SELECT PARA ADICIONAR PRODUTO */}
                             <select
+                                id={`${inputId}-select`}
                                 disabled={disabled}
                                 className="bg-[#357F7D] text-white px-4 py-2 rounded-md disabled:opacity-60"
                                 onChange={(e) => {
@@ -78,7 +80,7 @@ export default function Formulario({
                             >
                                 <option value="">Adicionar Produto...</option>
                                 {produtos.map((p) => (
-                                    <option key={p.id} value={p.id}>
+                                    <option id={`${p.id}-option`} key={p.id} value={p.id}>
                                         {p.nome} — R$ {p.preco}
                                     </option>
                                 ))}
@@ -112,6 +114,7 @@ export default function Formulario({
                                                 <td className="border border-gray-600 p-2">
                                                     {!somenteLeitura ? (
                                                         <input
+                                                            id={`${inputId}-quantidade-${i}`}
                                                             type="number"
                                                             min={1}
                                                             value={item.quantidade}
@@ -148,6 +151,7 @@ export default function Formulario({
                                                 {!somenteLeitura && (
                                                     <td className="border border-gray-600 p-2">
                                                         <button
+                                                            id={"delete-btn"}
                                                             type="button"
                                                             className="bg-red-500 px-2 py-1 rounded-md"
                                                             onClick={() => {
@@ -175,6 +179,7 @@ export default function Formulario({
 
                         {campo.type === "select" ? (
                             <select
+                                id={`${inputId}-select`}
                                 disabled={disabled}
                                 value={formData[campo.name] ?? ""}
                                 onChange={(e) => handleChange(campo.name, e.target.value)}
@@ -182,13 +187,14 @@ export default function Formulario({
                             >
                                 <option value="">Selecione...</option>
                                 {campo.options?.map((op) => (
-                                    <option key={op} value={op}>
+                                    <option id={`${op}-option`} key={op} value={op}>
                                         {op}
                                     </option>
                                 ))}
                             </select>
                         ) : (
                             <input
+                                id={`${inputId}-input`}
                                 type={campo.type}
                                 placeholder={campo.label}
                                 disabled={disabled}

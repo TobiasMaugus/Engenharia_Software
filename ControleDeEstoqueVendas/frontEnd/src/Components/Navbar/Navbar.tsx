@@ -18,6 +18,7 @@ export default function Navbar({ active }: { active: string }) {
       {tabs.map((tab) => (
         <div
           key={tab.label}
+          id={`navbar-${tab.label.toLowerCase()}`}
           onClick={() => navigate(tab.path)}
           className={`flex-1 text-center py-3 cursor-pointer font-semibold transition-colors duration-200 ${
             active === tab.label
