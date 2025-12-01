@@ -83,4 +83,34 @@ public class Vendas_TEST extends BaseTest {
 
 		LOGGER.trace("fluxo de Cadastro bem sucedido!");
 	}
+
+	@Test
+	public void FluxoDeBuscaPOrNomeDeCliente(){
+		String username = "teste";
+		String password = "teste";
+		String targetName = "Eduardo Alves";
+
+		LOGGER.trace("Iniciando de Login no sistema");
+		driver.get("http://localhost:5173/");
+		LOGGER.trace("Performando Login com as credenciais:" +
+				"\nUsename: " + username +
+				"\nPassword: " + password);
+		view.performLogin(username, password);
+
+		if (!view.assertElementExists("log-out-btn")) {
+			LOGGER.trace("Login Falhou");
+			return;
+		}
+
+		LOGGER.trace("Performando Busca de Venda Por Nome de Cliente");
+		if(seacrh(targetName)){
+			LOGGER.trace("Busca de Venda pelo nome " + targetName + " Bem sucedida!");
+		} else{
+			LOGGER.trace("Busca de Venda pelo Nome " + targetName + " Falhou!");
+		}
+
+		LOGGER.trace("Encerrando rotina de teste");
+
+	}
+
 }

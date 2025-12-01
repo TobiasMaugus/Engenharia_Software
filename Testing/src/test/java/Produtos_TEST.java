@@ -58,17 +58,20 @@ public class Produtos_TEST extends BaseTest {
 	}
 
 	public void delete(String targetKey, String deleteBtnId) {
+		LOGGER.trace("Buscando item: {}", targetKey);
 		if (this.seacrh(targetKey)) {
+			LOGGER.trace("Removendo item: {}", targetKey);
 			view.click(deleteBtnId);
+			LOGGER.trace("Clicando em warning de sucesso");
 			view.click("confirm-btn");
 		} else {
-			LOGGER.trace("Elemento não encontrado");
+			LOGGER.trace("Elemento não encontrado, terminando subrotina");
 		}
 
 	}
 
 	@Test
-	public void FluxoDeCadastro() {
+	public void FluxoDeCadastroDeProduto() {
 		LOGGER.trace("Iniciando fluxo de Login");
 		driver.get("http://localhost:5173/");
 
@@ -81,10 +84,10 @@ public class Produtos_TEST extends BaseTest {
 		}
 
 		LOGGER.trace("Performando Cadastro de Produto");
-		Produto p = new Produto("Mesa","Itens",75.50, 50);
+		Produto p = new Produto("Mesa", "Itens", 75.50, 50);
 		create(p);
 		view.handleAllert();
-		if(!view.assertElementExists("navbar-produtos")) {
+		if (!view.assertElementExists("navbar-produtos")) {
 			LOGGER.trace("Cadastro de produto Falhou");
 			return;
 		}
@@ -107,7 +110,7 @@ public class Produtos_TEST extends BaseTest {
 
 		LOGGER.trace("Performando Busca de Produto");
 		seacrh("Mouse Game");
-		if(!view.assertElementExists("2-edit")) {
+		if (!view.assertElementExists("2-edit")) {
 			LOGGER.trace("Busca de produto Falhou");
 			return;
 		}
@@ -116,26 +119,31 @@ public class Produtos_TEST extends BaseTest {
 	}
 
 	@Test
-	public void fluxoDeDeletar() {
-		LOGGER.trace("Iniciando fluxo de Login");
+	public void fluxoDeDeletarProduto() {
+		String username = "teste";
+		String password = "teste";
+
+		LOGGER.trace("Iniciando de Login no sistema");
 		driver.get("http://localhost:5173/");
-
-		LOGGER.trace("Performando Login");
-		view.performLogin("teste", "teste");
-
+		LOGGER.trace("Performando Login com as credenciais:" +
+				"\nUsename: " + username +
+				"\nPassword: "+ password);
+		view.performLogin(username, password);
 		if (!view.assertElementExists("log-out-btn")) {
-			LOGGER.trace("Login Falhou");
+			LOGGER.trace("Login Falhou, terminando rotina de teste");
 			return;
 		}
 
 		LOGGER.trace("Performando Deletar Produto");
-		delete("Mesa", "20-delete");
-		if(!view.assertElementExists("navbar-produtos")) {
+		delete("Mesa", "28-delete");
+
+		if (!view.assertElementExists("navbar-produtos")) {
 			LOGGER.trace("Busca de produto Falhou");
 			return;
 		}
 
-		LOGGER.trace("fluxo de Deletar bem sucedido!");
+		LOGGER.trace("Fluxo 'Deletar Produto' bem sucedido!");
+		LOGGER.trace("Encerrando rotina de teste");
 	}
 
 	@Test
@@ -152,10 +160,10 @@ public class Produtos_TEST extends BaseTest {
 		}
 
 		LOGGER.trace("Performando Edição de Produto");
-		Produto p = new Produto("Mesa","Itens",75.50, 52);
+		Produto p = new Produto("Mesa", "Itens", 75.50, 52);
 		edit(p, "21-edit");
 		view.handleAllert();
-		if(!view.assertElementExists("navbar-produtos")) {
+		if (!view.assertElementExists("navbar-produtos")) {
 			LOGGER.trace("Edição de produto Falhou");
 			return;
 		}
