@@ -1,25 +1,25 @@
 import "./App.css";
-import Header from "./Components/Header/Header";
-import Footer from "./Components/Footer/Footer";
-import Navbar from "./Components/Navbar/Navbar";
+import Header from "./Components/Header.tsx";
+import Footer from "./Components/Footer.tsx";
+import Navbar from "./Components/Navbar.tsx";
 import Bg from "./Components/Bg";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import LoginForm from "./Components/Pages/Login/LoginForm";
-import VendaBody from "./Components/Pages/Venda/VendaBody";
-import ProdutoBody from "./Components/Pages/Produto/ProdutoBody";
-import ClienteBody from "./Components/Pages/Cliente/ClienteBody";
-import ExcluirVenda from "./Components/Pages/Venda/ExcluirVenda";
-import EditarVenda from "./Components/Pages/Venda/EditarVenda";
-import CadastrarVenda from "./Components/Pages/Venda/CadastrarVenda";
-import VisualizarVenda from "./Components/Pages/Venda/VisualizarVenda";
-import ExcluirProduto from "./Components/Pages/Produto/ExcluirProduto";
-import EditarProduto from "./Components/Pages/Produto/EditarProduto";
-import CadastrarProduto from "./Components/Pages/Produto/CadastrarProduto";
-import ExcluirCliente from "./Components/Pages/Cliente/ExcluirCliente";
-import EditarCliente from "./Components/Pages/Cliente/EditarCliente";
-import CadastrarCliente from "./Components/Pages/Cliente/CadastrarCliente";
+import LoginForm from "./Pages/Login/LoginForm";
+import VendaBody from "./Pages/Venda/VendaBody";
+import ProdutoBody from "./Pages/Produto/ProdutoBody";
+import ClienteBody from "./Pages/Cliente/ClienteBody";
+import ExcluirVenda from "./Pages/Venda/ExcluirVenda";
+import EditarVenda from "./Pages/Venda/EditarVenda";
+import CadastrarVenda from "./Pages/Venda/CadastrarVenda";
+import VisualizarVenda from "./Pages/Venda/VisualizarVenda";
+import ExcluirProduto from "./Pages/Produto/ExcluirProduto";
+import EditarProduto from "./Pages/Produto/EditarProduto";
+import CadastrarProduto from "./Pages/Produto/CadastrarProduto";
+import ExcluirCliente from "./Pages/Cliente/ExcluirCliente";
+import EditarCliente from "./Pages/Cliente/EditarCliente";
+import CadastrarCliente from "./Pages/Cliente/CadastrarCliente";
 
 function App() {
   return (

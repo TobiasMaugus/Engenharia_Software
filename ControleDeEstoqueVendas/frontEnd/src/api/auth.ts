@@ -5,9 +5,7 @@ export type LoginResult =
     | { success: true; token: string }
     | { success: false; message: string };
 
-// -------------------------------
-// LOGIN
-// -------------------------------
+
 export const loginRequest = async (
     username: string,
     password: string
@@ -29,17 +27,13 @@ export const loginRequest = async (
     }
 };
 
-// -------------------------------
-// TIPOS DO USUÁRIO DECODIFICADO
-// -------------------------------
+
 export interface DecodedUser {
     username: string;
     role: string;
 }
 
-// -------------------------------
-// DECODIFICA O TOKEN JWT
-// -------------------------------
+
 export function decodeToken(token: string): DecodedUser | null {
     try {
         const payloadBase64 = token.split(".")[1];
@@ -56,9 +50,6 @@ export function decodeToken(token: string): DecodedUser | null {
     }
 }
 
-// -------------------------------
-// PEGA USUÁRIO LOGADO DO LOCALSTORAGE
-// -------------------------------
 export function getUserFromToken(): DecodedUser | null {
     const token = localStorage.getItem("token");
     if (!token) return null;

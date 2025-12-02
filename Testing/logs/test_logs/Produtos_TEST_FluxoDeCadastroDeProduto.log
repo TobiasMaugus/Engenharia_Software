@@ -1,0 +1,5 @@
+2025-12-01 19:46:28 [main] INFO  ROOT - Log para o teste: Produtos_TEST_FluxoDeCadastroDeProduto.log iniciado.
+2025-12-01 19:46:28 [main] TRACE Produtos_TEST - Iniciando fluxo de Login
+2025-12-01 19:46:28 [main] TRACE Produtos_TEST - Performando Login
+2025-12-01 19:46:29 [main] TRACE Produtos_TEST - Performando Cadastro de Produto
+2025-12-01 19:46:30 [main] TRACE Produtos_TEST - fluxo de Cadastro bem sucedido!
