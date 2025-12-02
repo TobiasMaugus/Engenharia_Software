@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import CadastroEdicaoForm from "../../CadastroEdicaoForm";
-import { listarClientes } from "../../../api/clienteService";
-import { listarProdutos } from "../../../api/produtoService";
+import CadastroEdicaoForm from "../../Components/CadastroEdicaoForm.tsx";
+import { listarClientes } from "../../api/clienteService.ts";
+import { listarProdutos } from "../../api/produtoService.ts";
 
 export default function CadastrarVenda() {
     const [clientes, setClientes] = useState([]);

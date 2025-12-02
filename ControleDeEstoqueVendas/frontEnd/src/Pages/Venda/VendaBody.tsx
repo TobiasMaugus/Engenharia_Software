@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import PageLayout from "../../PageLayout";
-import SearchBar from "../../SearchBar";
-import DataTable from "../../DataTable";
-import Pagination from "../../Pagination";
+import PageLayout from "../../Components/PageLayout.tsx";
+import SearchBar from "../../Components/SearchBar.tsx";
+import DataTable from "../../Components/DataTable.tsx";
+import Pagination from "../../Components/Pagination.tsx";
 
-import { listarVendas, excluirVenda } from "../../../api/vendaService";
-import type { Venda } from "../../../types/Venda";
+import { listarVendas, excluirVenda } from "../../api/vendaService.ts";
+import type { Venda } from "../../types/Venda.ts";
 
-import { getUserFromToken } from "../../../api/auth";
-import ExcluirVenda from "./ExcluirVenda"; // ✅ import do modal
+import { getUserFromToken } from "../../api/auth.ts";
+import ExcluirVenda from "./ExcluirVenda.tsx"; // ✅ import do modal
 
 export default function VendaBody() {
     const navigate = useNavigate();

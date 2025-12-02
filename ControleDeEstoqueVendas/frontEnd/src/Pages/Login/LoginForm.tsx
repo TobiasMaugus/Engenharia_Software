@@ -1,7 +1,7 @@
 import { FaUser, FaKey, FaTools } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { loginRequest } from "../../../api/auth";
+import { loginRequest } from "../../api/auth.ts";
 
 export default function Login() {
     const navigate = useNavigate();

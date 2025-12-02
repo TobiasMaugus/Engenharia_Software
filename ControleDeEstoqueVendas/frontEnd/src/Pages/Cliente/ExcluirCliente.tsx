@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import ExcluirModal from "../../ModalExcluir";
+import ExcluirModal from "../../Components/ModalExcluir.tsx";
 
 export default function ExcluirCliente() {
     const location = useLocation();

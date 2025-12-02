@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Formulario from "../../Form";
-import { criarProduto, editarProduto, listarProdutos } from "../../../api/produtoService";
+import Formulario from "../../Components/Form.tsx";
+import { criarProduto, editarProduto, listarProdutos } from "../../api/produtoService.ts";
 
 export default function FormProduto({ modo }: { modo: "cadastrar" | "editar" }) {
     const navigate = useNavigate();

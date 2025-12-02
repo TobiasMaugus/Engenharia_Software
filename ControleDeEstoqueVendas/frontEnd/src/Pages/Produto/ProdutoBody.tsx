@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import PageLayout from "../../PageLayout";
-import SearchBar from "../../SearchBar";
-import DataTable from "../../DataTable";
-import Pagination from "../../Pagination";
-import ExcluirModal from "../../ModalExcluir";
-import { listarProdutos, excluirProduto } from "../../../api/produtoService";
-import type { Produto } from "../../../types/Produto";
+import PageLayout from "../../Components/PageLayout.tsx";
+import SearchBar from "../../Components/SearchBar.tsx";
+import DataTable from "../../Components/DataTable.tsx";
+import Pagination from "../../Components/Pagination.tsx";
+import ExcluirModal from "../../Components/ModalExcluir.tsx";
+import { listarProdutos, excluirProduto } from "../../api/produtoService.ts";
+import type { Produto } from "../../types/Produto.ts";
 
-import { getUserFromToken } from "../../../api/auth";
+import { getUserFromToken } from "../../api/auth.ts";
 
 export default function ProdutoBody() {
     const navigate = useNavigate();

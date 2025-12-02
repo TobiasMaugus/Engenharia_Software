@@ -7,7 +7,7 @@ interface ExcluirModalProps {
 
 export default function ExcluirModal({itemNome, tipo, onConfirm, onCancel}: ExcluirModalProps) {
     return (
-        <main className="flex-grow flex justify-center items-center bg-[#dce7dd] fixed inset-0">
+        <main className="flex-grow flex justify-center items-center bg-black/50 fixed inset-0 z-50">
             <div
                 className="bg-[#4E5A58] text-white w-[80%] max-w-3xl rounded-2xl p-10 shadow-lg flex flex-col items-center text-center space-y-8">
                 <h2 className="text-4xl font-extrabold tracking-wide">EXCLUIR {tipo.toUpperCase()}</h2>

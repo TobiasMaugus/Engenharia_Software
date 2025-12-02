@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import CadastroEdicaoForm from "../../CadastroEdicaoForm";
-import { listarClientes } from "../../../api/clienteService";
-import { listarProdutos } from "../../../api/produtoService";
-import { buscarVenda } from "../../../api/vendaService";
+import CadastroEdicaoForm from "../../Components/CadastroEdicaoForm.tsx";
+import { listarClientes } from "../../api/clienteService.ts";
+import { listarProdutos } from "../../api/produtoService.ts";
+import { buscarVenda } from "../../api/vendaService.ts";
 
 export default function EditarVenda() {
     const { id } = useParams<{ id?: string }>();

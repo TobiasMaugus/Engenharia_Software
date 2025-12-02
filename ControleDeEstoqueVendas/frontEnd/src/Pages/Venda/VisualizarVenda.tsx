@@ -1,9 +1,9 @@
-import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import {useLocation, useParams, useNavigate} from "react-router-dom";
+import {ArrowLeft} from "lucide-react";
 
 export default function VisualizarVenda() {
-    const { id } = useParams();
-    const { state: venda } = useLocation();
+    const {id} = useParams();
+    const {state: venda} = useLocation();
     const navigate = useNavigate();
 
     if (!venda) {
@@ -15,15 +15,16 @@ export default function VisualizarVenda() {
     }
 
     return (
-        <div className="mt-6 mb-6">
-            <div className="relative flex flex-col gap-4 bg-[#455150] p-8 rounded-2xl shadow-lg max-w-4xl w-full mx-auto">
+        <div className="flex justify-center items-center h-screen mt-6 mb-6">
+            <div
+                className="relative flex flex-col gap-4 bg-[#455150] p-8 rounded-2xl shadow-lg max-w-4xl w-full mx-auto">
 
                 <button
                     id={"back-btn"}
                     onClick={() => navigate(-1)}
                     className="absolute right-8 top-8 bg-[#8EB9AE] p-2 rounded-md hover:bg-[#7aa59b] transition"
                 >
-                    <ArrowLeft className="text-white" />
+                    <ArrowLeft className="text-white"/>
                 </button>
 
                 <h1 className="text-white text-2xl font-bold mb-4">

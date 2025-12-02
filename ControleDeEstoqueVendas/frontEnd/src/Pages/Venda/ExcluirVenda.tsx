@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import type { Venda } from "../../../types/Venda";
+import type { Venda } from "../../types/Venda.ts";
 
 interface ExcluirVendaModalProps {
   venda: Venda;

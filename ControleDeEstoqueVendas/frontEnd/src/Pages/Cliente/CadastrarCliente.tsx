@@ -1,4 +1,4 @@
-import CadastroEdicaoForm from "../../CadastroEdicaoForm";
+import CadastroEdicaoForm from "../../Components/CadastroEdicaoForm.tsx";
 
 export default function CadastrarCliente() {
     return (

@@ -1,4 +1,4 @@
-import CadastroEdicaoForm from "../../../Components/CadastroEdicaoForm";
+import CadastroEdicaoForm from "../../Components/CadastroEdicaoForm.tsx";
 
 export default function CadastrarProduto() {
     return (

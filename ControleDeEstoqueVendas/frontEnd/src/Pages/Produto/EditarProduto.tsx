@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import CadastroEdicaoForm from "../../CadastroEdicaoForm";
+import CadastroEdicaoForm from "../../Components/CadastroEdicaoForm.tsx";
 
 export default function EditarProduto() {
     const location = useLocation();

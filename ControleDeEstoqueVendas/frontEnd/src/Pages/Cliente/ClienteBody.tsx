@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import PageLayout from "../../PageLayout";
-import SearchBar from "../../SearchBar";
-import DataTable from "../../DataTable";
-import Pagination from "../../Pagination";
+import PageLayout from "../../Components/PageLayout.tsx";
+import SearchBar from "../../Components/SearchBar.tsx";
+import DataTable from "../../Components/DataTable.tsx";
+import Pagination from "../../Components/Pagination.tsx";
 
-import ExcluirModal from "../../ModalExcluir";
-import { listarClientes, excluirCliente } from "../../../api/clienteService";
-import type { Cliente } from "../../../types/Cliente";
+import ExcluirModal from "../../Components/ModalExcluir.tsx";
+import { listarClientes, excluirCliente } from "../../api/clienteService.ts";
+import type { Cliente } from "../../types/Cliente.ts";
 
 export default function ClienteBody() {
     const navigate = useNavigate();

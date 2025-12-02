@@ -1,4 +1,4 @@
-import Navbar from "../Components/Navbar/Navbar";
+import Navbar from "./Navbar.tsx";
 
 export default function PageLayout({ title, children }: { title: string; children: React.ReactNode }) {
   return (

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { getUserFromToken } from "../../api/auth";
+import { getUserFromToken } from "../api/auth.ts";
 
 export default function Header() {
     const location = useLocation();
