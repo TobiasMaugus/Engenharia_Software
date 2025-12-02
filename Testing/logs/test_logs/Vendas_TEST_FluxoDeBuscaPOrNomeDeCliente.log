@@ -1,8 +1,0 @@
-2025-12-01 19:47:47 [main] INFO  ROOT - Log para o teste: Vendas_TEST_FluxoDeBuscaPOrNomeDeCliente.log iniciado.
-2025-12-01 19:47:47 [main] TRACE Vendas_TEST - Iniciando de Login no sistema
-2025-12-01 19:47:47 [main] TRACE Vendas_TEST - Performando Login com as credenciais:
-Usename: teste
-Password: teste
-2025-12-01 19:47:48 [main] TRACE Vendas_TEST - Performando Busca de Venda Por Nome de Cliente
-2025-12-01 19:47:48 [main] TRACE Vendas_TEST - Busca de Venda pelo nome Eduardo Alves Bem sucedida!
-2025-12-01 19:47:48 [main] TRACE Vendas_TEST - Encerrando rotina de teste
