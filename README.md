@@ -156,25 +156,30 @@ Este projeto foi desenvolvido utilizando as seguintes tecnologias e ferramentas:
 ```text
 /projeto/
 |  /ControleEstoqueVendas
-|  ├── backend                  # API Java + Spring Boot (Servidor)
+|  ├── backend                           # API Java + Spring Boot (Servidor)
 |  │   ├── src/
 |  │   │   ├── main/
-|  │   │   │   ├── java/         # Código-fonte principal da aplicação
-|  │   │   │   └── resources/    # Arquivos de configuração e estáticos
-|  │   │   └── test/             # Classes e recursos para testes unitários
-|  │   ├── pom.xml               # Gerenciamento de dependências Maven
+|  │   │   │   ├── java/                 # Código-fonte principal da aplicação
+|  │   │   │   └── resources/            # Arquivos de configuração e estáticos
+|  │   │   └── test/                     # Classes e recursos para testes unitários
+|  │   ├── pom.xml                       # Gerenciamento de dependências Maven
 |  │   └── README.md
 |  │
-|  ├── frontend/                 # Aplicação React (Cliente/Interface do Usuário)
+|  ├── frontend/                         # Aplicação React (Cliente/Interface do Usuário)
 |  │   ├── src/
-|  │   │   ├── components/       # Módulos de UI reutilizáveis
-|  │   │   ├── pages/            # Telas principais da aplicação
-|  │   ├── public/               # Ativos públicos (imagens, favicon, etc.)
-|  │   ├── vite.config.ts        # Configuração do bundler Vite
-|  │   └── package.json          # Metadados e dependências do Node.js
+|  │   │   ├── components/               # Módulos de UI reutilizáveis
+|  │   │   ├── pages/                    # Telas principais da aplicação
+|  │   │   ├── types/                    # Entidades principais dos CRUDs (Cliente, Produto e Venda)
+|  │   │   ├── api/ 
+|  │   ├── vite.config.ts                # Configuração do bundler Vite
+|  │   └── package.json                  # Metadados e dependências do Node.js
 |  │
-|  ├── documentação/             # Documentação externa do projeto (diagramas, etc.)
+|  /Documentação                         # Documentação externa do projeto (diagramas, etc.)
+|  |   ├── documentos de requisitos/     # Documentos de Requisitos
+|  |   ├── outros diagramas/             # Diagramas (classe, sequência, implantação, etc)
+|  |   ├── padrões adotados/             # Padrões adotados no projeto
+|  |   ├── relatórios de sprint/         # Relatórios das Sprints
 |  │
-|  └── README.md                 # Visão geral e instruções do projeto
+|  └── README.md                         # Visão geral e instruções do projeto
 ```
 
