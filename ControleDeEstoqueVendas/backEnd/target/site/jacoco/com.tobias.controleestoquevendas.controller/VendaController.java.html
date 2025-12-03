@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VendaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">controle-estoque-vendas</a> &gt; <a href="index.source.html" class="el_package">com.tobias.controleestoquevendas.controller</a> &gt; <span class="el_source">VendaController.java</span></div><h1>VendaController.java</h1><pre class="source lang-java linenums">package com.tobias.controleestoquevendas.controller;
+
+import com.tobias.controleestoquevendas.dto.VendaRequestDTO;
+import com.tobias.controleestoquevendas.dto.VendaResponseDTO;
+import com.tobias.controleestoquevendas.exception.EstoqueInsuficienteException;
+import com.tobias.controleestoquevendas.exception.ResourceNotFoundException;
+import com.tobias.controleestoquevendas.model.User;
+import com.tobias.controleestoquevendas.model.Venda;
+import com.tobias.controleestoquevendas.repository.UserRepository;
+import com.tobias.controleestoquevendas.service.VendaService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.data.domain.Pageable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;/vendas&quot;)
+<span class="fc" id="L33">public class VendaController {</span>
+
+    @Autowired
+    private VendaService vendaService;
+
+    @Autowired
+    UserRepository userRepository;
+
+    private Map&lt;String, String&gt; formatarErros(BindingResult bindingResult) {
+        // Retorna um Map onde a chave é o nome do campo e o valor é a mensagem de erro.
+<span class="nc" id="L43">        return bindingResult.getFieldErrors().stream()</span>
+<span class="nc" id="L44">                .collect(Collectors.toMap(</span>
+                        // Chave: Nome do campo com erro (ex: &quot;nome&quot;, &quot;cpf&quot;, &quot;quantidade&quot;)
+<span class="nc" id="L46">                        fieldError -&gt; fieldError.getField(),</span>
+
+                        // Valor: Mensagem de erro (ex: &quot;O nome é obrigatório&quot;)
+<span class="nc" id="L49">                        fieldError -&gt; fieldError.getDefaultMessage(),</span>
+
+                        // Merger (caso um campo tenha múltiplas anotações que falharam):
+                        // Mantém a primeira mensagem de erro encontrada.
+<span class="nc" id="L53">                        (existing, replacement) -&gt; existing</span>
+                ));
+    }
+
+    // --- C - Create (POST) ---
+    @PostMapping
+    public ResponseEntity&lt;?&gt; criarVenda(@RequestBody @Valid VendaRequestDTO vendaDTO, BindingResult bindingResult) {
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (bindingResult.hasErrors()) {</span>
+<span class="nc" id="L61">            return ResponseEntity.badRequest().body(formatarErros(bindingResult));</span>
+        }
+        try {
+            // Pega o usuário logado a partir do contexto
+<span class="nc" id="L65">            Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="nc" id="L66">            String username = auth.getName();</span>
+
+            // Busca o ID no banco
+<span class="nc" id="L69">            User user = userRepository.findByUsername(username).orElseThrow();</span>
+<span class="nc" id="L70">            Long vendedorId = user.getId();</span>
+
+<span class="nc" id="L72">            Venda novaVenda = vendaService.criarVenda(vendaDTO, vendedorId);</span>
+<span class="nc" id="L73">            return ResponseEntity.status(HttpStatus.CREATED).body(novaVenda);</span>
+<span class="nc" id="L74">        } catch (EstoqueInsuficienteException e) {</span>
+            // 2. Captura a exceção específica de estoque
+            // Retorna 400 Bad Request com uma mensagem de erro detalhada em JSON
+<span class="nc" id="L77">            return ResponseEntity.status(HttpStatus.BAD_REQUEST)</span>
+<span class="nc" id="L78">                    .body(Map.of(&quot;error&quot;, e.getMessage()));</span>
+<span class="nc" id="L79">        } catch (Exception e) {</span>
+<span class="nc" id="L80">            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();</span>
+        }
+    }
+
+    @GetMapping // Rota base: /vendas?page=0&amp;size=10
+    public Page&lt;VendaResponseDTO&gt; listarTodasVendasPaginado(
+            // Define o Pageable: page=0 (página inicial), size=10 (10 itens por página), sort=dataVenda,desc
+            @PageableDefault(page = 0, size = 10, sort = &quot;dataVenda&quot;, direction = Sort.Direction.DESC)
+            Pageable pageable) {
+
+<span class="nc" id="L90">        return vendaService.listarTodasVendasPaginado((org.springframework.data.domain.Pageable) pageable);</span>
+    }
+
+    @GetMapping(&quot;/periodo&quot;)
+    public List&lt;VendaResponseDTO&gt; listarVendasPorPeriodo(
+            @RequestParam(&quot;dataInicial&quot;)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) // Ex: 2025-01-01T00:00:00
+            LocalDateTime dataInicial,
+
+            @RequestParam(&quot;dataFinal&quot;)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime dataFinal) {
+
+<span class="nc" id="L103">        return vendaService.listarVendasPorPeriodo(dataInicial, dataFinal);</span>
+    }
+
+    // ---------------------------------------------------------------------
+    // 2. LER SOMENTE VENDAS DO VENDEDOR LOGADO
+    // ---------------------------------------------------------------------
+    @GetMapping(&quot;/meus&quot;)
+    public List&lt;Venda&gt; listarMinhasVendas() {
+<span class="nc" id="L111">        Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="nc" id="L112">        String username = auth.getName();</span>
+<span class="nc" id="L113">        User user = userRepository.findByUsername(username).orElseThrow();</span>
+<span class="nc" id="L114">        return vendaService.listarVendasPorVendedor(user.getId());</span>
+    }
+
+
+    // ---------------------------------------------------------------------
+    // 3. LER VENDAS DE UM CLIENTE ESPECÍFICO
+    // ---------------------------------------------------------------------
+    @GetMapping(&quot;/cliente/{clienteId}&quot;)
+    public List&lt;VendaResponseDTO&gt; listarVendasPorCliente(@PathVariable Long clienteId) {
+
+<span class="nc" id="L124">        List&lt;VendaResponseDTO&gt; vendas = vendaService.listarVendasPorCliente(clienteId);</span>
+<span class="nc" id="L125">        return vendaService.listarVendasPorCliente(clienteId);</span>
+
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;VendaResponseDTO&gt; buscarVendaPorId(@PathVariable Long id) {
+        try {
+<span class="nc" id="L132">            VendaResponseDTO vendaDTO = vendaService.buscarVendaPorId(id);</span>
+<span class="nc" id="L133">            return ResponseEntity.ok(vendaDTO);</span>
+
+<span class="nc" id="L135">        } catch (ResourceNotFoundException e) {</span>
+            // Se a venda não for encontrada, retorna 404 Not Found
+<span class="nc" id="L137">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // 4. VALOR TOTAL DAS VENDAS DO VENDEDOR LOGADO
+    // ---------------------------------------------------------------------
+    @GetMapping(&quot;/total/meu&quot;)
+    public ResponseEntity&lt;BigDecimal&gt; valorTotalMinhasVendas() {
+<span class="nc" id="L146">        Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="nc" id="L147">        String username = auth.getName();</span>
+<span class="nc" id="L148">        User user = userRepository.findByUsername(username).orElseThrow();</span>
+
+<span class="nc" id="L150">        BigDecimal total = vendaService.calcularValorTotalVendasPorVendedor(user.getId());</span>
+<span class="nc" id="L151">        return ResponseEntity.ok(total);</span>
+    }
+
+
+    // ---------------------------------------------------------------------
+    // 5. ATUALIZAR UMA VENDA
+    // ---------------------------------------------------------------------
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; atualizarVenda(
+            @PathVariable Long id,
+            @RequestBody @Valid VendaRequestDTO vendaDTO,
+            BindingResult bindingResult
+    ) {
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        if (bindingResult.hasErrors()) {</span>
+<span class="nc" id="L165">            return ResponseEntity.badRequest().body(formatarErros(bindingResult));</span>
+        }
+        try {
+<span class="nc" id="L168">            Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="nc" id="L169">            String username = auth.getName();</span>
+            // Assumindo que o UserRepository está injetado e User model tem o ID
+<span class="nc" id="L171">            User user = userRepository.findByUsername(username).orElseThrow();</span>
+
+<span class="nc" id="L173">            Venda vendaAtualizada = vendaService.atualizarVenda(id, vendaDTO, user.getId());</span>
+<span class="nc" id="L174">            return ResponseEntity.ok(vendaAtualizada);</span>
+
+<span class="nc" id="L176">        } catch (ResourceNotFoundException e) {</span>
+            // Trata Venda, Cliente ou Produto não encontrado (404)
+<span class="nc" id="L178">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(&quot;error&quot;, e.getMessage()));</span>
+
+<span class="nc" id="L180">        } catch (EstoqueInsuficienteException e) {</span>
+            // Trata erro de estoque (400)
+<span class="nc" id="L182">            return ResponseEntity.status(HttpStatus.BAD_REQUEST)</span>
+<span class="nc" id="L183">                    .body(Map.of(&quot;error&quot;, e.getMessage()));</span>
+
+<span class="nc" id="L185">        } catch (Exception e) {</span>
+            // ✅ CORREÇÃO: Captura a exceção desconhecida e retorna o corpo JSON
+            // Retorna a mensagem da exceção, que revelará o erro real
+<span class="nc" id="L188">            e.printStackTrace(); // Mantenha isso para debug no console</span>
+<span class="nc" id="L189">            return ResponseEntity.status(HttpStatus.BAD_REQUEST)</span>
+<span class="nc" id="L190">                    .body(Map.of(&quot;error&quot;, &quot;Falha na atualização da venda: &quot; + e.getMessage()));</span>
+        }
+    }
+
+
+    // ---------------------------------------------------------------------
+    // 6. EXCLUIR UMA VENDA (com opção de devolver estoque)
+    // ---------------------------------------------------------------------
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deletarVenda(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = &quot;false&quot;) boolean devolverEstoque
+    ) {
+        try {
+<span class="nc" id="L204">            vendaService.deletarVenda(id, devolverEstoque);</span>
+<span class="nc" id="L205">            return ResponseEntity.noContent().build();</span>
+<span class="nc" id="L206">        } catch (ResourceNotFoundException e) {</span>
+<span class="nc" id="L207">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

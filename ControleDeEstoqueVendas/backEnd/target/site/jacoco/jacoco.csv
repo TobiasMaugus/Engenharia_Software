@@ -1,0 +1,23 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+controle-estoque-vendas,com.tobias.controleestoquevendas.service,VendaService,549,3,18,0,108,1,32,1,23,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.service,ClienteService,31,3,0,0,7,1,6,1,6,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.service,UserDetailsServiceImpl,18,6,0,0,3,3,2,1,2,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.service,TokenService,131,3,10,0,36,1,9,1,4,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.service,ProdutoService,36,3,0,0,8,1,7,1,7,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.security,CustomAuthenticationEntryPoint,27,3,0,0,7,1,1,1,1,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.security,JwtAuthenticationFilter,47,6,6,0,12,3,4,1,1,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.security,CustomAccessDeniedHandler,27,3,0,0,7,1,1,1,1,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.security,CustomUserDetails,26,0,0,0,7,0,5,0,5,0
+controle-estoque-vendas,com.tobias.controleestoquevendas.security,SecurityConfig,0,371,0,0,0,45,0,8,0,8
+controle-estoque-vendas,com.tobias.controleestoquevendas.dto,VendaResponseDTO,45,0,4,0,12,0,3,0,1,0
+controle-estoque-vendas,com.tobias.controleestoquevendas.dto,RegisterRequest,3,0,0,0,1,0,1,0,1,0
+controle-estoque-vendas,com.tobias.controleestoquevendas.controller,ProdutoController,154,3,10,0,34,1,17,1,12,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.controller,ClienteController,19,115,1,5,5,26,3,13,2,11
+controle-estoque-vendas,com.tobias.controleestoquevendas.controller,AuthController,150,15,10,0,41,6,14,1,9,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.controller,VendaController,217,3,4,0,55,1,15,1,13,1
+controle-estoque-vendas,com.tobias.controleestoquevendas.config,CorsConfig.new WebMvcConfigurer() {...},0,54,0,0,0,8,0,2,0,2
+controle-estoque-vendas,com.tobias.controleestoquevendas.config,CorsConfig,0,8,0,0,0,2,0,2,0,2
+controle-estoque-vendas,com.tobias.controleestoquevendas.model,User,5,0,0,0,2,0,1,0,1,0
+controle-estoque-vendas,com.tobias.controleestoquevendas.exception,ResourceNotFoundException,4,0,0,0,2,0,1,0,1,0
+controle-estoque-vendas,com.tobias.controleestoquevendas.exception,EstoqueInsuficienteException,4,0,0,0,2,0,1,0,1,0
+controle-estoque-vendas,com.tobias.controleestoquevendas,ControleEstoqueVendasApplication,5,3,0,0,2,1,1,1,1,1

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">controle-estoque-vendas</a> &gt; <a href="index.source.html" class="el_package">com.tobias.controleestoquevendas.controller</a> &gt; <span class="el_source">AuthController.java</span></div><h1>AuthController.java</h1><pre class="source lang-java linenums">package com.tobias.controleestoquevendas.controller;
+
+import com.tobias.controleestoquevendas.dto.RegisterRequest;
+import com.tobias.controleestoquevendas.model.User;
+import com.tobias.controleestoquevendas.repository.UserRepository;
+import com.tobias.controleestoquevendas.service.TokenService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+
+@RestController
+@RequestMapping(&quot;/auth&quot;)
+public class AuthController {
+
+    private final AuthenticationManager authManager;
+    private final TokenService tokenService;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public AuthController(AuthenticationManager authManager, TokenService tokenService, UserRepository userRepository,
+<span class="fc" id="L35">                          BCryptPasswordEncoder passwordEncoder) {</span>
+<span class="fc" id="L36">        this.authManager = authManager;</span>
+<span class="fc" id="L37">        this.tokenService = tokenService;</span>
+<span class="fc" id="L38">        this.userRepository = userRepository;</span>
+<span class="fc" id="L39">        this.passwordEncoder = passwordEncoder;</span>
+<span class="fc" id="L40">    }</span>
+
+    private Map&lt;String, String&gt; formatarErros(BindingResult bindingResult) {
+        // Retorna um Map onde a chave é o nome do campo e o valor é a mensagem de erro.
+<span class="nc" id="L44">        return bindingResult.getFieldErrors().stream()</span>
+<span class="nc" id="L45">                .collect(Collectors.toMap(</span>
+                        // Chave: Nome do campo com erro (ex: &quot;nome&quot;, &quot;cpf&quot;, &quot;quantidade&quot;)
+<span class="nc" id="L47">                        fieldError -&gt; fieldError.getField(),</span>
+
+                        // Valor: Mensagem de erro (ex: &quot;O nome é obrigatório&quot;)
+<span class="nc" id="L50">                        fieldError -&gt; fieldError.getDefaultMessage(),</span>
+
+                        // Merger (caso um campo tenha múltiplas anotações que falharam):
+                        // Mantém a primeira mensagem de erro encontrada.
+<span class="nc" id="L54">                        (existing, replacement) -&gt; existing</span>
+                ));
+    }
+
+
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;?&gt; login(@RequestBody User loginRequest) {
+
+        try {
+            // Tenta autenticar
+<span class="nc" id="L64">            var authentication = authManager.authenticate(</span>
+<span class="nc" id="L65">                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())</span>
+            );
+
+            // Se bem-sucedido, gera o token (lógica do tokenService não é alterada)
+<span class="nc" id="L69">            var token = tokenService.generateToken(authentication);</span>
+
+            // Retorna o token com status 200 OK
+<span class="nc" id="L72">            return ResponseEntity.ok(token);</span>
+
+<span class="nc" id="L74">        } catch (BadCredentialsException e) {</span>
+            // Captura a exceção quando username ou senha estão incorretos
+
+            // Retorna 401 Unauthorized com uma mensagem de erro clara em formato JSON
+<span class="nc" id="L78">            return ResponseEntity</span>
+<span class="nc" id="L79">                    .status(HttpStatus.UNAUTHORIZED)</span>
+<span class="nc" id="L80">                    .body(Map.of(&quot;message&quot;, &quot;Credenciais inválidas. Verifique o nome de usuário e a senha.&quot;));</span>
+
+<span class="nc" id="L82">        } catch (Exception e) {</span>
+            // Captura outras possíveis exceções (ex: usuário não encontrado, se não for tratado no service)
+<span class="nc" id="L84">            return ResponseEntity</span>
+<span class="nc" id="L85">                    .status(HttpStatus.UNAUTHORIZED)</span>
+<span class="nc" id="L86">                    .body(Map.of(&quot;message&quot;, &quot;Falha na autenticação: &quot; + e.getMessage()));</span>
+        }
+    }
+
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;?&gt; register(@RequestBody @Valid RegisterRequest req, BindingResult bindingResult) {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if (bindingResult.hasErrors()) {</span>
+<span class="nc" id="L93">            return ResponseEntity.badRequest().body(formatarErros(bindingResult));</span>
+        }
+        // Verifica se o username já existe
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (userRepository.existsByUsername(req.username)) {</span>
+<span class="nc" id="L97">            return ResponseEntity.status(HttpStatus.CONFLICT)</span>
+<span class="nc" id="L98">                    .body(&quot;Erro: nome de usuário já existe&quot;);</span>
+        }
+
+        // Cria novo usuário
+<span class="nc" id="L102">        User user = new User();</span>
+<span class="nc" id="L103">        user.setUsername(req.username);</span>
+<span class="nc" id="L104">        user.setPassword(passwordEncoder.encode(req.password));</span>
+<span class="nc" id="L105">        user.setRole(req.role.toUpperCase());</span>
+
+<span class="nc" id="L107">        userRepository.save(user);</span>
+<span class="nc" id="L108">        return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="nc" id="L109">                .body(&quot;Usuário registrado com sucesso&quot;);</span>
+    }
+
+
+
+
+    @GetMapping(&quot;/users&quot;)
+    public List&lt;String&gt; listUsersRoles() {
+<span class="nc" id="L117">        return userRepository.findAll()</span>
+<span class="nc" id="L118">                .stream()</span>
+<span class="nc" id="L119">                .map(u -&gt; u.getUsername() + &quot; -&gt; &quot; + u.getRole())</span>
+<span class="nc" id="L120">                .toList();</span>
+    }
+
+    @GetMapping(&quot;/role&quot;)
+    public ResponseEntity&lt;String&gt; getRoleUsuarioLogado() {
+
+        // 1. Obtém o objeto Authentication do contexto de segurança
+<span class="nc" id="L127">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
+
+<span class="nc bnc" id="L129" title="All 6 branches missed.">        if (authentication == null || !authentication.isAuthenticated() || &quot;anonymousUser&quot;.equals(authentication.getPrincipal())) {</span>
+            // Caso o usuário não esteja autenticado (embora o Spring Security deve bloquear)
+<span class="nc" id="L131">            return ResponseEntity.status(401).body(&quot;Usuário não autenticado.&quot;);</span>
+        }
+
+        // 2. Obtém as permissões (autoridades) do usuário.
+        // No seu caso, a ROLE é a principal autoridade.
+<span class="nc" id="L136">        String role = authentication.getAuthorities().stream()</span>
+                // Pega a primeira autoridade encontrada (que deve ser a ROLE, ex: GERENTE, VENDEDOR)
+<span class="nc" id="L138">                .findFirst()</span>
+<span class="nc" id="L139">                .map(GrantedAuthority::getAuthority)</span>
+                // Se por algum motivo não tiver, retorna uma string padrão
+<span class="nc" id="L141">                .orElse(&quot;ROLE_NAO_ENCONTRADA&quot;);</span>
+
+<span class="nc" id="L143">        return ResponseEntity.ok(role);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

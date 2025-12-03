@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VendaResponseDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">controle-estoque-vendas</a> &gt; <a href="index.source.html" class="el_package">com.tobias.controleestoquevendas.dto</a> &gt; <span class="el_source">VendaResponseDTO.java</span></div><h1>VendaResponseDTO.java</h1><pre class="source lang-java linenums">package com.tobias.controleestoquevendas.dto;
+
+import com.tobias.controleestoquevendas.model.Venda;
+import com.tobias.controleestoquevendas.model.VendaProduto;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import lombok.*;
+
+@Data
+public class VendaResponseDTO {
+
+    private Long id;
+    private LocalDateTime dataVenda;
+    private BigDecimal valorTotal;
+
+    // CAMPOS ADICIONADOS
+    private Long vendedorId;
+    private String vendedorNome;
+    private Long clienteId;
+    private String clienteNome;
+    // FIM CAMPOS ADICIONADOS
+
+    // Você pode criar um DTO separado para os itens de venda se quiser simplificar,
+    // mas por enquanto, manteremos o VendaProduto simplificado se não tiver loops.
+    private List&lt;VendaProduto&gt; itens;
+
+    // Construtor, Getters e Setters
+
+<span class="nc" id="L30">    public VendaResponseDTO(Venda venda) {</span>
+<span class="nc" id="L31">        this.id = venda.getId();</span>
+<span class="nc" id="L32">        this.dataVenda = venda.getDataVenda();</span>
+<span class="nc" id="L33">        this.valorTotal = venda.getValorTotal();</span>
+<span class="nc" id="L34">        this.itens = venda.getItens();</span>
+
+        // Carrega dados do Vendedor (User)
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (venda.getVendedor() != null) {</span>
+<span class="nc" id="L38">            this.vendedorId = venda.getVendedor().getId();</span>
+<span class="nc" id="L39">            this.vendedorNome = venda.getVendedor().getUsername(); // Supondo que User tem um método getNome()</span>
+        }
+
+        // Carrega dados do Cliente
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (venda.getCliente() != null) {</span>
+<span class="nc" id="L44">            this.clienteId = venda.getCliente().getId();</span>
+<span class="nc" id="L45">            this.clienteNome = venda.getCliente().getNome();</span>
+        }
+<span class="nc" id="L47">    }</span>
+
+    // ... Getters and Setters (Gerados pelo IntelliJ ou Lombok)
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

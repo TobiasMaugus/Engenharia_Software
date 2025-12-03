@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VendaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">controle-estoque-vendas</a> &gt; <a href="index.source.html" class="el_package">com.tobias.controleestoquevendas.service</a> &gt; <span class="el_source">VendaService.java</span></div><h1>VendaService.java</h1><pre class="source lang-java linenums">package com.tobias.controleestoquevendas.service;
+
+import com.tobias.controleestoquevendas.dto.ItemVendaRequestDTO;
+import com.tobias.controleestoquevendas.dto.VendaRequestDTO;
+import com.tobias.controleestoquevendas.dto.VendaResponseDTO;
+import com.tobias.controleestoquevendas.exception.EstoqueInsuficienteException;
+import com.tobias.controleestoquevendas.exception.ResourceNotFoundException;
+import com.tobias.controleestoquevendas.model.*;
+import com.tobias.controleestoquevendas.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+<span class="fc" id="L26">public class VendaService {</span>
+
+    @Autowired
+    private VendaRepository vendaRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private VendaProdutoRepository vendaProdutoRepository; // Necessário para exclusão de itens
+
+    // ==============================================
+    // 1. C - CREATE (Cria uma nova Venda)
+    // Já estava implementado, mas revisado para clareza
+    // ==============================================
+    @Transactional
+    public Venda criarVenda(VendaRequestDTO vendaDTO, Long vendedorId) {
+
+<span class="nc" id="L50">        Cliente cliente = clienteRepository.findById(vendaDTO.getClienteId())</span>
+<span class="nc" id="L51">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Cliente não encontrado com ID: &quot; + vendaDTO.getClienteId()));</span>
+
+<span class="nc" id="L53">        User vendedor = userRepository.findById(vendedorId)</span>
+<span class="nc" id="L54">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Vendedor não encontrado com ID: &quot; + vendedorId));</span>
+
+<span class="nc" id="L56">        Venda venda = new Venda();</span>
+<span class="nc" id="L57">        venda.setCliente(cliente);</span>
+<span class="nc" id="L58">        venda.setVendedor(vendedor);</span>
+
+        // O método processarItens é delegado para reutilização (PUT)
+<span class="nc" id="L61">        return processarItensDaVenda(venda, vendaDTO.getItens());</span>
+    }
+
+    // ==============================================
+    // 2. R - READ (Listar Todas)
+    // ==============================================
+    public List&lt;Venda&gt; listarTodasVendas() {
+<span class="nc" id="L68">        return vendaRepository.findAll();</span>
+    }
+
+    public Optional&lt;Venda&gt; buscarPorId(Long id) {
+<span class="nc" id="L72">        return vendaRepository.findById(id);</span>
+    }
+    @Transactional
+    public Page&lt;VendaResponseDTO&gt; listarTodasVendasPaginado(Pageable pageable) {
+
+        // 1. Busque a página de entidades Venda (no JPA Repository)
+<span class="nc" id="L78">        Page&lt;Venda&gt; vendasPage = vendaRepository.findAll(pageable);</span>
+
+        // 2. Mapeie a Page&lt;Venda&gt; para Page&lt;VendaResponseDTO&gt;
+<span class="nc" id="L81">        return vendasPage.map(VendaResponseDTO::new);</span>
+    }
+
+    @Transactional
+    public List&lt;VendaResponseDTO&gt; listarVendasPorPeriodo(
+            LocalDateTime dataInicial,
+            LocalDateTime dataFinal) {
+
+        // 1. Chame o novo método do Repository
+<span class="nc" id="L90">        List&lt;Venda&gt; vendasList = vendaRepository.findByDataVendaBetween(dataInicial, dataFinal);</span>
+
+        // 2. Mapeie a List&lt;Venda&gt; para List&lt;VendaResponseDTO&gt;
+<span class="nc" id="L93">        return vendasList.stream()</span>
+<span class="nc" id="L94">                .map(VendaResponseDTO::new)</span>
+<span class="nc" id="L95">                .collect(Collectors.toList());</span>
+    }
+
+    // ==============================================
+    // 3. R - READ (Listar por Vendedor)
+    // ==============================================
+    public List&lt;Venda&gt; listarVendasPorVendedor(Long vendedorId) {
+        // Usa o Query Method definido no VendaRepository
+<span class="nc" id="L103">        return vendaRepository.findByVendedorId(vendedorId);</span>
+    }
+
+    // ==============================================
+    // 4. R - READ (Listar por Cliente)
+    // ==============================================
+    @Transactional
+    public List&lt;VendaResponseDTO&gt; listarVendasPorCliente(Long clienteId) {
+
+        // 1. O Repositório deve retornar uma lista de Venda
+<span class="nc" id="L113">        List&lt;Venda&gt; vendasList = vendaRepository.findByClienteId(clienteId);</span>
+        // Lembre-se que o findByClienteId deve estar no seu VendaRepository
+
+        // 2. Mapeia a lista de Venda para a lista de VendaResponseDTO
+<span class="nc" id="L117">        return vendasList.stream()</span>
+<span class="nc" id="L118">                .map(VendaResponseDTO::new)</span>
+<span class="nc" id="L119">                .collect(Collectors.toList());</span>
+    }
+
+    @Transactional // Garante que as relações (Cliente, Vendedor, Itens) sejam carregadas.
+    public VendaResponseDTO buscarVendaPorId(Long id) {
+
+<span class="nc" id="L125">        Venda venda = vendaRepository.findById(id)</span>
+<span class="nc" id="L126">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Venda não encontrada com ID: &quot; + id));</span>
+
+        // Mapeia a entidade Venda para o DTO de resposta
+<span class="nc" id="L129">        return new VendaResponseDTO(venda);</span>
+    }
+
+    // ==============================================
+    // 5. R - READ (Calcular Valor Total por Vendedor)
+    // **NOTA:** Este método idealmente usaria uma query otimizada no Repository.
+    // Para simplificar, faremos o cálculo em Java sobre a lista.
+    // ==============================================
+    public BigDecimal calcularValorTotalVendasPorVendedor(Long vendedorId) {
+<span class="nc" id="L138">        List&lt;Venda&gt; vendas = vendaRepository.findByVendedorId(vendedorId);</span>
+
+<span class="nc" id="L140">        return vendas.stream()</span>
+<span class="nc" id="L141">                .map(Venda::getValorTotal)</span>
+<span class="nc" id="L142">                .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+    }
+
+    // ==============================================
+    // 6. U - UPDATE (Atualizar Venda)
+    // Lógica complexa: exige ajustar o estoque. Só Gerente pode fazer.
+    // ==============================================
+    @Transactional
+    public Venda atualizarVenda(Long vendaId, VendaRequestDTO vendaDTO, Long vendedorId) {
+
+<span class="nc" id="L152">        Venda vendaExistente = vendaRepository.findById(vendaId)</span>
+<span class="nc" id="L153">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Venda não encontrada com ID: &quot; + vendaId));</span>
+
+<span class="nc" id="L155">        Cliente novoCliente = clienteRepository.findById(vendaDTO.getClienteId())</span>
+<span class="nc" id="L156">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Cliente não encontrado com ID: &quot; + vendaDTO.getClienteId()));</span>
+
+<span class="nc" id="L158">        User vendedor = userRepository.findById(vendedorId)</span>
+<span class="nc" id="L159">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Vendedor não encontrado com ID: &quot; + vendedorId));</span>
+
+        // Mapeia os itens antigos da venda por ID do Produto para fácil acesso
+<span class="nc" id="L162">        Map&lt;Long, VendaProduto&gt; itensAntigosMap = vendaExistente.getItens().stream()</span>
+<span class="nc" id="L163">                .collect(Collectors.toMap(</span>
+<span class="nc" id="L164">                        item -&gt; item.getProduto().getId(),</span>
+<span class="nc" id="L165">                        item -&gt; item</span>
+                ));
+
+        // Lista para armazenar os novos itens de VendaProduto a serem persistidos
+<span class="nc" id="L169">        List&lt;VendaProduto&gt; novosItensVenda = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L170">        BigDecimal novoValorTotal = BigDecimal.ZERO;</span>
+
+        // 1. Processa os itens na requisição (vendaDTO)
+<span class="nc bnc" id="L173" title="All 2 branches missed.">        for (ItemVendaRequestDTO itemDTO : vendaDTO.getItens()) {</span>
+
+<span class="nc" id="L175">            Produto produto = produtoRepository.findById(itemDTO.getProdutoId())</span>
+<span class="nc" id="L176">                    .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Produto não encontrado com ID: &quot; + itemDTO.getProdutoId()));</span>
+
+<span class="nc" id="L178">            VendaProduto itemOriginal = itensAntigosMap.get(produto.getId());</span>
+
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            int quantidadeAntiga = (itemOriginal != null) ? itemOriginal.getQuantidade() : 0;</span>
+<span class="nc" id="L181">            int quantidadeNova = itemDTO.getQuantidade();</span>
+
+            // 2. CALCULA A DIFERENÇA DE ESTOQUE
+            // Se o valor for POSITIVO, é a quantidade que precisa ser DEVOLVIDA ao estoque.
+            // Se o valor for NEGATIVO, é a quantidade que precisa ser RETIRADA do estoque.
+<span class="nc" id="L186">            int ajusteEstoque = quantidadeAntiga - quantidadeNova;</span>
+
+            // 3. VERIFICA ESTOQUE (só é necessário verificar se a quantidade nova for MAIOR que a antiga)
+<span class="nc bnc" id="L189" title="All 2 branches missed.">            if (ajusteEstoque &lt; 0) { // Se o ajuste for negativo, significa que a venda aumentou</span>
+                // O estoque atual + o ajuste (que é negativo) deve ser &gt;= 0
+<span class="nc bnc" id="L191" title="All 2 branches missed.">                if (produto.getQuantidadeEstoque() + ajusteEstoque &lt; 0) {</span>
+<span class="nc" id="L192">                    throw new EstoqueInsuficienteException(&quot;Estoque insuficiente para o produto: &quot; + produto.getNome());</span>
+                }
+            }
+
+            // 4. APLICA O AJUSTE E SALVA O PRODUTO
+<span class="nc" id="L197">            produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() + ajusteEstoque);</span>
+<span class="nc" id="L198">            produtoRepository.save(produto); // Persiste a alteração de estoque</span>
+
+            // 5. CRIA O NOVO ITEM DE VENDA
+<span class="nc" id="L201">            VendaProduto vendaProduto = new VendaProduto();</span>
+<span class="nc" id="L202">            vendaProduto.setVenda(vendaExistente);</span>
+<span class="nc" id="L203">            vendaProduto.setProduto(produto);</span>
+<span class="nc" id="L204">            vendaProduto.setQuantidade(quantidadeNova);</span>
+<span class="nc" id="L205">            vendaProduto.setPrecoUnitario(produto.getPreco());</span>
+<span class="nc" id="L206">            vendaProduto.setId(new VendaProdutoId(vendaExistente.getId(), produto.getId()));</span>
+
+<span class="nc" id="L208">            novosItensVenda.add(vendaProduto);</span>
+<span class="nc" id="L209">            novoValorTotal = novoValorTotal.add(produto.getPreco().multiply(BigDecimal.valueOf(quantidadeNova)));</span>
+
+            // Remove o item do mapa para saber quais itens foram removidos da venda
+<span class="nc" id="L212">            itensAntigosMap.remove(produto.getId());</span>
+<span class="nc" id="L213">        }</span>
+
+        // 6. TRATA ITENS REMOVIDOS DA VENDA ORIGINAL
+        // Os itens que sobraram no 'itensAntigosMap' foram removidos da vendaDTO
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        for (VendaProduto itemRemovido : itensAntigosMap.values()) {</span>
+<span class="nc" id="L218">            Produto produto = itemRemovido.getProduto();</span>
+            // Devolve a quantidade TOTAL do item removido
+<span class="nc" id="L220">            produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() + itemRemovido.getQuantidade());</span>
+<span class="nc" id="L221">            produtoRepository.save(produto);</span>
+<span class="nc" id="L222">        }</span>
+
+        // 7. ATUALIZA A VENDA EXISTENTE
+<span class="nc" id="L225">        vendaExistente.setCliente(novoCliente);</span>
+<span class="nc" id="L226">        vendaExistente.setVendedor(vendedor);</span>
+<span class="nc" id="L227">        vendaExistente.setValorTotal(novoValorTotal);</span>
+
+        // **IMPORTANTE**: Limpa e adiciona os novos itens.
+        // Isso garante que o Hibernate/JPA trate a remoção dos itens antigos
+        // e a persistência dos novos (Requer @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+        // no campo 'itens' do modelo Venda).
+<span class="nc" id="L233">        vendaExistente.getItens().clear();</span>
+<span class="nc" id="L234">        vendaExistente.getItens().addAll(novosItensVenda);</span>
+
+<span class="nc" id="L236">        return vendaRepository.save(vendaExistente);</span>
+    }
+
+    // ==============================================
+    // 7. D - DELETE (Excluir Venda)
+    // ==============================================
+    @Transactional
+    public void deletarVenda(Long vendaId, boolean devolverEstoque) {
+<span class="nc" id="L244">        Venda venda = vendaRepository.findById(vendaId)</span>
+<span class="nc" id="L245">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Venda não encontrada com ID: &quot; + vendaId));</span>
+
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        if (devolverEstoque) {</span>
+            // Devolve a quantidade ao estoque para cada item da venda
+<span class="nc bnc" id="L249" title="All 2 branches missed.">            for (VendaProduto item : venda.getItens()) {</span>
+<span class="nc" id="L250">                Produto produto = item.getProduto();</span>
+<span class="nc" id="L251">                produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() + item.getQuantidade());</span>
+<span class="nc" id="L252">                produtoRepository.save(produto);</span>
+<span class="nc" id="L253">            }</span>
+        }
+
+        // Exclui a venda (os itens de VendaProduto serão excluídos em cascata)
+<span class="nc" id="L257">        vendaRepository.delete(venda);</span>
+<span class="nc" id="L258">    }</span>
+
+    // ==============================================
+    // MÉTODO AUXILIAR: Processa Itens e Atualiza Estoque
+    // Usado em CREATE e UPDATE
+    // ==============================================
+    @Transactional
+    protected Venda processarItensDaVenda(Venda venda, List&lt;ItemVendaRequestDTO&gt; itensDTO) {
+<span class="nc" id="L266">        List&lt;VendaProduto&gt; itensVenda = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L267">        BigDecimal valorTotal = BigDecimal.ZERO;</span>
+
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        for (ItemVendaRequestDTO itemDTO : itensDTO) {</span>
+
+<span class="nc" id="L271">            Produto produto = produtoRepository.findById(itemDTO.getProdutoId())</span>
+<span class="nc" id="L272">                    .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Produto não encontrado com ID: &quot; + itemDTO.getProdutoId()));</span>
+
+<span class="nc" id="L274">            int quantidade = itemDTO.getQuantidade();</span>
+<span class="nc" id="L275">            BigDecimal precoUnitario = produto.getPreco();</span>
+
+            // Validação de Estoque
+<span class="nc bnc" id="L278" title="All 2 branches missed.">            if (produto.getQuantidadeEstoque() &lt; quantidade) {</span>
+<span class="nc" id="L279">                throw new EstoqueInsuficienteException(&quot;Estoque insuficiente para o produto: &quot; + produto.getNome());</span>
+            }
+
+            // Cria VendaProduto
+<span class="nc" id="L283">            VendaProdutoId vpId = new VendaProdutoId(venda.getId(), produto.getId());</span>
+<span class="nc" id="L284">            VendaProduto itemVenda = new VendaProduto();</span>
+<span class="nc" id="L285">            itemVenda.setId(vpId);</span>
+<span class="nc" id="L286">            itemVenda.setVenda(venda);</span>
+<span class="nc" id="L287">            itemVenda.setProduto(produto);</span>
+<span class="nc" id="L288">            itemVenda.setQuantidade(quantidade);</span>
+<span class="nc" id="L289">            itemVenda.setPrecoUnitario(precoUnitario);</span>
+
+<span class="nc" id="L291">            itensVenda.add(itemVenda);</span>
+
+            // Cálculo e Baixa no Estoque
+<span class="nc" id="L294">            BigDecimal subtotal = precoUnitario.multiply(BigDecimal.valueOf(quantidade));</span>
+<span class="nc" id="L295">            valorTotal = valorTotal.add(subtotal);</span>
+
+<span class="nc" id="L297">            produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() - quantidade);</span>
+<span class="nc" id="L298">            produtoRepository.save(produto);</span>
+<span class="nc" id="L299">        }</span>
+
+<span class="nc" id="L301">        venda.setItens(itensVenda);</span>
+<span class="nc" id="L302">        venda.setValorTotal(valorTotal);</span>
+
+<span class="nc" id="L304">        return vendaRepository.save(venda);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

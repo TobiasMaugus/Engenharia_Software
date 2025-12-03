@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClienteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">controle-estoque-vendas</a> &gt; <a href="index.source.html" class="el_package">com.tobias.controleestoquevendas.controller</a> &gt; <span class="el_source">ClienteController.java</span></div><h1>ClienteController.java</h1><pre class="source lang-java linenums">package com.tobias.controleestoquevendas.controller;
+
+import com.tobias.controleestoquevendas.model.Cliente;
+import com.tobias.controleestoquevendas.repository.ClienteRepository;
+import com.tobias.controleestoquevendas.service.ClienteService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping(&quot;/clientes&quot;)
+<span class="fc" id="L20">public class ClienteController {</span>
+
+    @Autowired
+    private ClienteService service;
+    @Autowired
+    private ClienteRepository clienteRepository;
+
+    private Map&lt;String, String&gt; formatarErros(BindingResult bindingResult) {
+<span class="fc" id="L28">        return bindingResult.getFieldErrors().stream()</span>
+<span class="fc" id="L29">                .collect(Collectors.toMap(</span>
+<span class="fc" id="L30">                        fieldError -&gt; fieldError.getField(),</span>
+<span class="fc" id="L31">                        fieldError -&gt; fieldError.getDefaultMessage(),</span>
+<span class="nc" id="L32">                        (existing, replacement) -&gt; existing // Mantém a primeira mensagem se houver duplicidade</span>
+                ));
+    }
+
+    // Create
+    @PostMapping
+    public ResponseEntity&lt;?&gt; criarCliente(@Valid @RequestBody Cliente cliente, BindingResult bindingResult) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (bindingResult.hasErrors()) {</span>
+<span class="fc" id="L40">            return ResponseEntity.badRequest().body(formatarErros(bindingResult));</span>
+        }
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (clienteRepository.existsByCpf(cliente.getCpf())) {</span>
+<span class="fc" id="L44">            return ResponseEntity.status(HttpStatus.CONFLICT)</span>
+<span class="fc" id="L45">                    .body(&quot;Erro: já existe um cliente com esse CPF&quot;);</span>
+        }
+
+<span class="fc" id="L48">        Cliente novo = clienteRepository.save(cliente);</span>
+<span class="fc" id="L49">        return ResponseEntity.status(HttpStatus.CREATED).body(novo);</span>
+    }
+
+    // Read All
+    @GetMapping
+    public List&lt;Cliente&gt; listarClientes() {
+<span class="fc" id="L55">        return service.listarClientes();</span>
+    }
+
+    // Read One (por ID)
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Cliente&gt; buscarPorId(@PathVariable Long id) {
+<span class="nc" id="L61">        return service.buscarPorId(id)</span>
+<span class="nc" id="L62">                .map(ResponseEntity::ok)</span>
+<span class="nc" id="L63">                .orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // Read One (por nome)
+    @GetMapping(&quot;/search&quot;)
+    public List&lt;Cliente&gt; buscarPorNome(@RequestParam String nome) {
+<span class="fc" id="L69">        return service.buscarPorNome(nome);</span>
+    }
+
+    // Update
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; atualizarCliente(@PathVariable Long id, @RequestBody @Valid Cliente clienteAtualizado, BindingResult bindingResult) {
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (bindingResult.hasErrors()) {</span>
+<span class="nc" id="L76">            return ResponseEntity.badRequest().body(formatarErros(bindingResult));</span>
+        }
+<span class="fc" id="L78">        return service.buscarPorId(id).map(cliente -&gt; {</span>
+<span class="fc" id="L79">            cliente.setNome(clienteAtualizado.getNome());</span>
+<span class="fc" id="L80">            cliente.setCpf(clienteAtualizado.getCpf());</span>
+<span class="fc" id="L81">            cliente.setTelefone(clienteAtualizado.getTelefone());</span>
+<span class="fc" id="L82">            Cliente atualizado = service.atualizarCliente(cliente);</span>
+<span class="fc" id="L83">            return ResponseEntity.ok(atualizado);</span>
+<span class="fc" id="L84">        }).orElse(ResponseEntity.notFound().build());</span>
+    }
+
+    // Delete
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; deletarCliente(@PathVariable Long id) {
+<span class="fc" id="L90">        return service.buscarPorId(id).map(cliente -&gt; {</span>
+<span class="fc" id="L91">            service.deletarCliente(id);</span>
+<span class="fc" id="L92">            return ResponseEntity.noContent().&lt;Void&gt;build();</span>
+<span class="fc" id="L93">        }).orElse(ResponseEntity.notFound().build());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TokenService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">controle-estoque-vendas</a> &gt; <a href="index.source.html" class="el_package">com.tobias.controleestoquevendas.service</a> &gt; <span class="el_source">TokenService.java</span></div><h1>TokenService.java</h1><pre class="source lang-java linenums">package com.tobias.controleestoquevendas.service;
+
+import com.tobias.controleestoquevendas.security.CustomUserDetails;
+import io.jsonwebtoken.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+<span class="fc" id="L18">public class TokenService {</span>
+
+    private static final String SECRET_KEY = &quot;mysecretkeymysecretkeymysecretkeymysecretkeymymymy&quot;;
+    private static final long EXPIRATION_TIME = 86400000; // 24 hours
+
+    public String generateToken(Authentication authentication) {
+
+        // CORREÇÃO: Faça o cast para o seu objeto CustomUserDetails
+<span class="nc" id="L26">        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();</span>
+
+        // Extrai roles como lista de strings
+<span class="nc" id="L29">        List&lt;String&gt; roles = userPrincipal.getAuthorities().stream()</span>
+<span class="nc" id="L30">                .map(a -&gt; a.getAuthority())</span>
+<span class="nc" id="L31">                .toList();</span>
+
+        // Opcional, mas útil: Incluir o ID do usuário (vendedor) no token
+<span class="nc" id="L34">        Long userId = userPrincipal.getId();</span>
+
+<span class="nc" id="L36">        return Jwts.builder()</span>
+<span class="nc" id="L37">                .setSubject(authentication.getName()) // authentication.getName() é o username/login</span>
+<span class="nc" id="L38">                .claim(&quot;id&quot;, userId) // Adicionando o ID da entidade</span>
+<span class="nc" id="L39">                .claim(&quot;roles&quot;, roles)</span>
+<span class="nc" id="L40">                .setIssuedAt(new Date())</span>
+<span class="nc" id="L41">                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))</span>
+<span class="nc" id="L42">                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)</span>
+<span class="nc" id="L43">                .compact();</span>
+    }
+
+
+    public String validateToken(String token) {
+        try {
+<span class="nc" id="L49">            Jws&lt;Claims&gt; claims = Jwts.parser()</span>
+<span class="nc" id="L50">                    .setSigningKey(SECRET_KEY)</span>
+<span class="nc" id="L51">                    .parseClaimsJws(token);</span>
+<span class="nc" id="L52">            return claims.getBody().getSubject();</span>
+<span class="nc" id="L53">        } catch (JwtException e) {</span>
+<span class="nc" id="L54">            return null;</span>
+        }
+    }
+
+    public Authentication getAuthentication(String token) {
+<span class="nc" id="L59">        Jws&lt;Claims&gt; claims = Jwts.parser()</span>
+<span class="nc" id="L60">                .setSigningKey(SECRET_KEY)</span>
+<span class="nc" id="L61">                .parseClaimsJws(token);</span>
+
+<span class="nc" id="L63">        String username = claims.getBody().getSubject();</span>
+
+        // ✅ Recupera as roles de forma segura
+<span class="nc" id="L66">        Object rolesObj = claims.getBody().get(&quot;roles&quot;);</span>
+<span class="nc" id="L67">        List&lt;String&gt; roles = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (rolesObj instanceof List&lt;?&gt;) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            for (Object role : (List&lt;?&gt;) rolesObj) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                if (role instanceof String) {</span>
+<span class="nc" id="L72">                    roles.add((String) role);</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">                } else if (role instanceof Map&lt;?, ?&gt; map &amp;&amp; map.containsKey(&quot;authority&quot;)) {</span>
+<span class="nc" id="L74">                    roles.add((String) map.get(&quot;authority&quot;)); // caso venha como LinkedHashMap</span>
+                }
+<span class="nc" id="L76">            }</span>
+        }
+
+        // ✅ Cria authorities a partir das roles
+<span class="nc" id="L80">        List&lt;SimpleGrantedAuthority&gt; authorities = roles.stream()</span>
+<span class="nc" id="L81">                .map(SimpleGrantedAuthority::new)</span>
+<span class="nc" id="L82">                .toList();</span>
+
+<span class="nc" id="L84">        return new UsernamePasswordAuthenticationToken(username, null, authorities);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
