@@ -156,7 +156,7 @@ Este projeto foi desenvolvido utilizando as seguintes tecnologias e ferramentas:
 ```text
 /projeto/
 |  /ControleEstoqueVendas
-|  ├── backend                           # API Java + Spring Boot (Servidor)
+|  ├── backend/                          # API Java + Spring Boot (Servidor)
 |  │   ├── src/
 |  │   │   ├── main/
 |  │   │   │   ├── java/                 # Código-fonte principal da aplicação
